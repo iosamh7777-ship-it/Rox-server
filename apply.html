@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقديم طلب - ROX ROLEPLAY</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AOS Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+            cursor: none;
+        }
+        .hexagon-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .hexagon-logo i { font-size: 24px; color: white; }
+
+        .navbar-top {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 15px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .nav-item {
+            color: #ffffff;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            opacity: 0.8;
+        }
+        .nav-item:hover { opacity: 1; color: #00d2ff; }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 210, 255, 0.1);
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            padding: 15px 20px;
+            border-radius: 15px;
+            color: white;
+            margin-bottom: 25px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .form-input:focus {
+            border-color: #00d2ff;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+        }
+
+        /* User Profile Style */
+        .user-profile {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+        }
+        .user-avatar { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #00d2ff; }
+        .logout-btn {
+            cursor: pointer;
+            color: #ef4444;
+            font-size: 10px;
+            font-weight: bold;
+            transition: opacity 0.3s;
+        }
+        .logout-btn:hover { opacity: 0.8; }
+        .login-btn {
+            background: #5865F2;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        /* Custom Cursor */
+        .cursor { 
+            width: 20px; 
+            height: 20px; 
+            border: 2px solid #00d2ff; 
+            border-radius: 50%; 
+            position: fixed; 
+            pointer-events: none; 
+            z-index: 9999; 
+            top: 0;
+            left: 0;
+            transition: transform 0.08s ease-out; 
+            will-change: transform;
+        }
+        .cursor-dot { 
+            width: 4px; 
+            height: 4px; 
+            background: #00d2ff; 
+            border-radius: 50%; 
+            position: fixed; 
+            pointer-events: none; 
+            z-index: 9999; 
+            top: 0;
+            left: 0;
+            will-change: transform;
+        }
+
+        /* Background Elements */
+        .bg-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.03) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        .bg-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15vw;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.01);
+            z-index: -2;
+            pointer-events: none;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        /* Feedback Status Overlay */
+        .status-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 3000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(15px);
+        }
+        .status-overlay.active { display: flex; }
+        .status-icon {
+            width: 100px; height: 100px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 50px; margin-bottom: 20px; transform: scale(0); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .status-overlay.active .status-icon { transform: scale(1); }
+        .status-success { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 2px solid #10b981; box-shadow: 0 0 30px rgba(16, 185, 129, 0.4); }
+        .status-error { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 2px solid #ef4444; box-shadow: 0 0 30px rgba(239, 68, 68, 0.4); }
+        .status-text { font-size: 24px; font-weight: 900; color: white; text-align: center; }
+
+        @media (max-width: 768px) {
+            .navbar-top { padding: 15px 20px; }
+            .form-container { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Feedback Overlay -->
+    <div id="statusOverlay" class="status-overlay">
+        <div id="statusIcon" class="status-icon"></div>
+        <div id="statusText" class="status-text"></div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor hidden md:block"></div>
+    <div class="cursor-dot hidden md:block"></div>
+
+    <!-- Background Elements -->
+    <div class="bg-glow"></div>
+    <div class="bg-text">ROX</div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar-top">
+        <div class="flex gap-6 items-center">
+            <a href="index.html" class="nav-item group">
+                <i class="fas fa-arrow-right ml-2 group-hover:-translate-x-1 transition-transform"></i> العودة للرئيسية
+            </a>
+            <a href="https://www.Realmcity.com" target="_blank" class="nav-item group text-green-400 hover:text-green-300">
+                <i class="fas fa-globe ml-2 group-hover:scale-110 transition-transform"></i> زيارة الموقع
+            </a>
+        </div>
+        
+        <div class="flex items-center gap-6">
+            <div id="loginSection">
+                <button onclick="loginWithDiscord()" class="login-btn">
+                    <i class="fab fa-discord"></i> تسجيل الدخول
+                </button>
+            </div>
+            <div id="userSection" class="user-profile">
+                <img id="userAvatar" class="user-avatar" src="" alt="">
+                <div class="flex flex-col">
+                    <span id="userName" class="text-xs font-bold"></span>
+                    <span onclick="logout()" class="logout-btn">تسجيل الخروج</span>
+                </div>
+            </div>
+            <div class="hexagon-logo">
+                <i class="fas fa-bolt"></i>
+            </div>
+        </div>
+    </nav>
+
+    <main class="min-h-screen pt-32 pb-20 px-6">
+        <div class="max-w-3xl mx-auto" data-aos="fade-up">
+            <div class="form-container">
+                <div class="text-center mb-12">
+                    <h1 id="applyTitle" class="text-4xl font-black mb-4 text-blue-500">تقديم طلب</h1>
+                    <p class="text-gray-400">يرجى تعبئة كافة البيانات المطلوبة بدقة</p>
+                </div>
+
+                <form id="applyForm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-gray-400">الاسم الثلاثي</label>
+                            <input type="text" id="fullName" class="form-input" placeholder="أدخل اسمك الكامل" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-gray-400">العمر</label>
+                            <input type="number" id="age" class="form-input" placeholder="أدخل عمرك" required>
+                        </div>
+                    </div>
+                    
+                    <label class="block text-sm font-bold mb-2 text-gray-400">Discord ID</label>
+                    <input type="text" id="discordId" class="form-input" placeholder="سيتم تعبئته تلقائياً عند تسجيل الدخول" required readonly>
+                    
+                    <label class="block text-sm font-bold mb-2 text-gray-400">القسم المطلوب</label>
+                    <select id="jobType" class="form-input cursor-pointer" required>
+                        <option value="" disabled selected>اختر القسم...</option>
+                        <option value="police">السلك العسكري (Police)</option>
+                        <option value="ems">الخدمات الطبية (EMS)</option>
+                    </select>
+
+                    <label class="block text-sm font-bold mb-2 text-gray-400">لماذا تريد الانضمام إلينا؟</label>
+                    <textarea id="reason" class="form-input h-40 resize-none" placeholder="اكتب سبب رغبتك في الانضمام بالتفصيل" required></textarea>
+                    
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-blue-600/30 transform hover:scale-[1.02]">
+                        إرسال الطلب الآن <i class="fas fa-paper-plane mr-2"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Configuration
+        const CLIENT_ID = '1458487352438554676';
+        const REDIRECT_URI = window.location.href.split('#')[0].split('?')[0];
+        console.log("Apply Page Redirect URI:", REDIRECT_URI);
+        const WEBHOOKS = {
+            police: 'https://discord.com/api/webhooks/1486839086235783289/hqUk-IniFfHX21Sh3qpcVlMvTWyOgpZQV4qmFu5-I0EC-qrsj9GKAvS7ldAKXQrKfE7B',
+            ems: 'https://discord.com/api/webhooks/1486839546019844337/AgEDCX_kjwdV40yEn2AopABGfUoptcgSIzZWDyWHbhiEbPpOhVxbiT_2yEgvCO_K8JOy'
+        };
+
+        // Discord Auth
+        function loginWithDiscord() {
+            if (window.location.protocol === 'file:') {
+                alert("خطأ: يرجى تشغيل الموقع باستخدام خادم محلي (Live Server) لتسجيل الدخول.");
+                return;
+            }
+            const url = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
+            window.location.href = url;
+        }
+
+        function handleAuth() {
+            const fragment = new URLSearchParams(window.location.hash.slice(1));
+            const accessToken = fragment.get('access_token');
+            if (accessToken) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+                fetchUserInfo(accessToken);
+            } else {
+                const storedUser = localStorage.getItem('discordUser');
+                if (storedUser) updateUI(JSON.parse(storedUser));
+            }
+        }
+
+        async function fetchUserInfo(token) {
+            try {
+                const response = await fetch('https://discord.com/api/users/@me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const user = await response.json();
+                localStorage.setItem('discordUser', JSON.stringify(user));
+                updateUI(user);
+            } catch (error) { console.error(error); }
+        }
+
+        function updateUI(user) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('userSection').style.display = 'flex';
+            document.getElementById('userName').innerText = user.global_name || user.username;
+            document.getElementById('userAvatar').src = user.avatar 
+                ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+                : 'https://cdn.discordapp.com/embed/avatars/0.png';
+            document.getElementById('discordId').value = user.id;
+        }
+
+        function logout() {
+            localStorage.removeItem('discordUser');
+            window.location.reload();
+        }
+
+        // Form Submission
+        document.getElementById('applyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const discordUser = localStorage.getItem('discordUser');
+            if (!discordUser) {
+                alert('يرجى تسجيل الدخول عبر ديسكورد أولاً!');
+                return;
+            }
+
+            const type = document.getElementById('jobType').value;
+            
+            // Check Recruitment Status
+            const status = JSON.parse(localStorage.getItem('recruitmentStatus') || '{"police": true, "ems": true}');
+            if (!status[type]) {
+                showFeedback(false, `نعتذر، التقديم لقسم ${type === 'police' ? 'الشرطة' : 'EMS'} مغلق حالياً.`);
+                return;
+            }
+
+            const data = {
+                fullName: document.getElementById('fullName').value,
+                age: document.getElementById('age').value,
+                discordId: document.getElementById('discordId').value,
+                reason: document.getElementById('reason').value
+            };
+
+            const appCode = 'ROX-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            const roleId = type === 'police' ? '1486744401014423654' : '1486744444853158089';
+            const webhookUrl = WEBHOOKS[type];
+            const embed = {
+                title: `🎫 تذكرة تقديم جديدة - ${type === 'police' ? 'الشرطة' : 'EMS'}`,
+                color: type === 'police' ? 3447003 : 3066993,
+                description: `قام **${data.fullName}** بإرسال طلب انضمام جديد.\n**كود الطلب:** \`${appCode}\``,
+                fields: [
+                    { name: '👤 الاسم الكامل', value: `\`${data.fullName}\``, inline: true },
+                    { name: '🎂 العمر', value: `\`${data.age}\``, inline: true },
+                    { name: '🆔 Discord ID', value: `\`${data.discordId}\``, inline: false },
+                    { name: '🎖️ الرتبة المطلوبة', value: `<@&${roleId}>`, inline: true },
+                    { name: '🔑 كود الطلب', value: `\`${appCode}\``, inline: true },
+                    { name: '📝 السبب', value: `\`\`\`${data.reason}\`\`\`` }
+                ],
+                footer: { text: `ROX ROLEPLAY | ID: ${data.discordId}` },
+                timestamp: new Date()
+            };
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        content: `📢 **طلب توظيف جديد** (كود: \`${appCode}\`)`,
+                        embeds: [embed],
+                        components: [
+                            {
+                                type: 1,
+                                components: [
+                                    {
+                                        type: 2,
+                                        style: 5,
+                                        label: "✅ قبول (تواصل معه)",
+                                        url: `https://discord.com/users/${data.discordId}`
+                                    },
+                                    {
+                                        type: 2,
+                                        style: 5,
+                                        label: "❌ رفض (تواصل معه)",
+                                        url: `https://discord.com/users/${data.discordId}`
+                                    },
+                                    {
+                                        type: 2,
+                                        style: 5,
+                                        label: "👤 الملف الشخصي",
+                                        url: `https://discord.com/users/${data.discordId}`
+                                    }
+                                ]
+                            }
+                        ]
+                    })
+                });
+
+                if (response.ok) {
+                    showFeedback(true, `تم الإرسال بنجاح!\nكود الطلب: ${appCode}\n(تم نسخ الكود تلقائياً)`);
+                    navigator.clipboard.writeText(appCode); // Auto copy code for convenience
+                    document.getElementById('applyForm').reset();
+                    // Sync with local stats for admin panel
+                    let apps = JSON.parse(localStorage.getItem('serverApps') || '[]');
+                    apps.unshift({ ...data, type, code: appCode, time: new Date().toISOString() });
+                    localStorage.setItem('serverApps', JSON.stringify(apps));
+                } else {
+                    showFeedback(false, 'حدث خطأ أثناء الإرسال!');
+                }
+            } catch (error) {
+                showFeedback(false, 'فشل الاتصال بالخادم!');
+            }
+        });
+
+        function showFeedback(success, text) {
+            const overlay = document.getElementById('statusOverlay');
+            const icon = document.getElementById('statusIcon');
+            const statusText = document.getElementById('statusText');
+            icon.className = 'status-icon ' + (success ? 'status-success' : 'status-error');
+            icon.innerHTML = success ? '<i class="fas fa-check"></i>' : '<i class="fas fa-times"></i>';
+            statusText.innerText = text;
+            overlay.style.display = 'flex';
+            setTimeout(() => overlay.classList.add('active'), 10);
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                setTimeout(() => overlay.style.display = 'none', 500);
+                if(success) window.location.href = 'index.html';
+            }, 3000);
+        }
+
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+        let mouseX = 0, mouseY = 0;
+        let isHovering = false;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Using requestAnimationFrame for smoother performance
+            requestAnimationFrame(() => {
+                cursor.style.transform = `translate3d(${mouseX - 10}px, ${mouseY - 10}px, 0) scale(${isHovering ? 2.5 : 1})`;
+                cursorDot.style.transform = `translate3d(${mouseX - 2}px, ${mouseY - 2}px, 0)`;
+            });
+        });
+
+        // Initialize
+        window.addEventListener('load', () => {
+            handleAuth();
+            AOS.init({ duration: 800, once: true });
+            
+            // Check overall status
+            const params = new URLSearchParams(window.location.search);
+            const type = params.get('type');
+            if(type) {
+                const status = JSON.parse(localStorage.getItem('recruitmentStatus') || '{"police": true, "ems": true}');
+                if(!status[type]) {
+                    document.querySelector('.form-container').innerHTML = `
+                        <div class="text-center py-20">
+                            <i class="fas fa-lock text-red-500 text-7xl mb-6"></i>
+                            <h1 class="text-4xl font-black mb-4">التقديم مغلق حالياً</h1>
+                            <p class="text-gray-400 mb-8">عذراً، هذا القسم لا يستقبل طلبات جديدة في الوقت الحالي.</p>
+                            <a href="index.html" class="bg-blue-600 px-8 py-3 rounded-xl font-bold">العودة للرئيسية</a>
+                        </div>
+                    `;
+                    return;
+                }
+                document.getElementById('jobType').value = type;
+            }
+
+            // Hover effects for cursor
+            const interactiveElements = document.querySelectorAll('a, button, input, select, textarea');
+            interactiveElements.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    isHovering = true;
+                    cursor.style.borderColor = 'white';
+                    cursor.style.background = 'rgba(0, 210, 255, 0.1)';
+                });
+                el.addEventListener('mouseleave', () => {
+                    isHovering = false;
+                    cursor.style.borderColor = '#00d2ff';
+                    cursor.style.background = 'transparent';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
