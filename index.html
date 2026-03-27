@@ -827,7 +827,7 @@
         const CLIENT_ID = '1486841317316231310'; // Updated Client ID
         const REDIRECT_URI = window.location.href.split('#')[0].split('?')[0];
         console.log("Your Redirect URI is:", REDIRECT_URI); // This will help you find the correct URL
-        const ADMIN_ID = '1029823456386228356';
+        const ADMIN_IDS = ['609296092835741696', '579499056536092672', '1026172587119755304', '1029823456386228356'];
         
         const WEBHOOKS = {
             police: 'https://discord.com/api/webhooks/1486839086235783289/hqUk-IniFfHX21Sh3qpcVlMvTWyOgpZQV4qmFu5-I0EC-qrsj9GKAvS7ldAKXQrKfE7B',
@@ -897,7 +897,7 @@
 
         function checkAdminStatus(user) {
             const chefs = JSON.parse(localStorage.getItem('serverChefs') || '[]');
-            const isAdmin = user.id === ADMIN_ID;
+            const isAdmin = ADMIN_IDS.includes(user.id);
             const isChef = chefs.some(c => c.id === user.id);
             
             if (isAdmin || isChef) {
@@ -988,7 +988,7 @@
                             </div>
                             <span class="text-[8px] text-gray-500 mt-1">تمت الإضافة: ${new Date(chef.addedAt).toLocaleDateString('ar-EG')}</span>
                         </div>
-                        ${currentUser.id === ADMIN_ID ? `
+                        ${ADMIN_IDS.includes(currentUser.id) ? `
                             <button onclick="removeChef('${chef.id}')" class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all">
                                 <i class="fas fa-trash-alt text-xs"></i>
                             </button>
@@ -1005,7 +1005,7 @@
             const chef = chefs.find(c => c.id === currentUser.id);
 
             // Check permissions
-            if (currentUser.id !== ADMIN_ID) {
+            if (!ADMIN_IDS.includes(currentUser.id)) {
                 if (!chef || (chef.dept !== type && chef.dept !== 'all')) {
                     alert('ليس لديك صلاحية لتعديل حالة هذا القسم!');
                     return;
@@ -1064,8 +1064,8 @@
             document.getElementById('btn-ems').style.pointerEvents = status.ems ? 'auto' : 'none';
             document.getElementById('btn-ems').style.opacity = status.ems ? '1' : '0.5';
 
-            // Show/Hide Add Chef Section (Only for main Admin)
-            document.getElementById('add-chef-container').style.display = currentUser.id === ADMIN_ID ? 'block' : 'none';
+            // Show/Hide Add Chef Section (Only for admin IDs)
+            document.getElementById('add-chef-container').style.display = ADMIN_IDS.includes(currentUser.id) ? 'block' : 'none';
 
             const list = document.getElementById('admin-recent-list');
             if (apps.length > 0) {
