@@ -269,25 +269,34 @@
         /* Custom Cursor */
         .cursor { 
             position: fixed;
-            width: 20px;
-            height: 20px;
+            width: 25px;
+            height: 25px;
             border: 2px solid #00d2ff;
             border-radius: 50%;
             pointer-events: none;
             z-index: 9999;
-            transition: all 0.1s ease;
+            transition: transform 0.1s ease-out, border-color 0.3s, background 0.3s;
             transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
         }
         
         .cursor-dot { 
             position: fixed;
-            width: 4px;
-            height: 4px;
+            width: 6px;
+            height: 6px;
             background: #00d2ff;
             border-radius: 50%;
             pointer-events: none;
             z-index: 10000;
             transform: translate(-50%, -50%);
+            transition: transform 0.05s ease-out;
+            box-shadow: 0 0 10px #00d2ff;
+        }
+
+        .cursor-hover {
+            transform: translate(-50%, -50%) scale(1.5);
+            background: rgba(0, 210, 255, 0.1);
+            border-color: #fff;
         }
     </style>
 </head>
@@ -398,7 +407,6 @@
             <a href="#home" class="nav-item active">الرئيسية</a>
             <a href="#creators" class="nav-item">صناع المحتوى</a>
             <a href="#general" class="nav-item">القوانين</a>
-            <a href="#apply" class="nav-item">تقديم الوظائف</a>
             <a id="adminApplyLink" href="admin-apply.html" class="nav-item" style="display: none;">تقديم رقابة</a>
             <a href="#store" class="nav-item">المتجر</a>
         </div>
@@ -625,44 +633,6 @@
         </div>
     </section>
 
-    <!-- Jobs Section -->
-    <section id="jobs" class="py-24 px-6 md:px-20 max-w-7xl mx-auto">
-        <div class="text-center mb-16" data-aos="fade-up">
-            <h2 class="text-4xl font-black mb-4 flex items-center justify-center gap-3">
-                <span class="w-12 h-1 bg-blue-600"></span>
-                تقديم الوظائف
-                <span class="w-12 h-1 bg-blue-600"></span>
-            </h2>
-            <p class="text-gray-400">انضم للطاقم الحكومي أو الطبي في سيرفر ROX</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div id="card-ems" class="rule-card p-10 rounded-3xl text-center border-blue-600/20 relative overflow-hidden" data-aos="fade-right">
-                <div id="lock-ems" class="hidden absolute inset-0 bg-red-950/40 backdrop-blur-[2px] flex items-center justify-center z-20">
-                    <div class="flex flex-col items-center">
-                        <i class="fas fa-lock text-red-500 text-5xl mb-2 animate-pulse"></i>
-                        <span class="text-red-500 font-black text-xl">التقديم مغلق</span>
-                    </div>
-                </div>
-                <i class="fas fa-user-md text-5xl text-blue-500 mb-6"></i>
-                <h3 class="text-2xl font-bold mb-4">الخدمات الطبية (EMS)</h3>
-                <p class="text-gray-400 mb-6">كن بطلاً وأنقذ حياة المواطنين في الحالات الطارئة.</p>
-                <button id="btn-ems" onclick="scrollToApply('ems')" class="inline-block bg-blue-600 px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors">تقديم الآن</button>
-            </div>
-            <div id="card-police" class="rule-card p-10 rounded-3xl text-center border-blue-600/20 relative overflow-hidden" data-aos="fade-left">
-                <div id="lock-police" class="hidden absolute inset-0 bg-red-950/40 backdrop-blur-[2px] flex items-center justify-center z-20">
-                    <div class="flex flex-col items-center">
-                        <i class="fas fa-lock text-red-500 text-5xl mb-2 animate-pulse"></i>
-                        <span class="text-red-500 font-black text-xl">التقديم مغلق</span>
-                    </div>
-                </div>
-                <i class="fas fa-shield-alt text-5xl text-blue-500 mb-6"></i>
-                <h3 class="text-2xl font-bold mb-4">السلك العسكري (Police)</h3>
-                <p class="text-gray-400 mb-6">ساهم في حفظ الأمن وفرض النظام داخل المدينة.</p>
-                <button id="btn-police" onclick="scrollToApply('police')" class="inline-block bg-blue-600 px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors">تقديم الآن</button>
-            </div>
-        </div>
-    </section>
-
     <!-- Police Rules Section -->
     <section id="police" class="py-24 bg-blue-900/10 border-y border-blue-600/20">
         <div class="max-w-7xl mx-auto px-6 md:px-20">
@@ -766,50 +736,6 @@
                 </ul>
                 <a href="#" class="block bg-white/5 border border-blue-600/50 py-3 rounded-xl hover:bg-blue-600 transition-all">شراء الآن</a>
             </div>
-        </div>
-    </section>
-
-    <!-- Apply Section -->
-    <section id="apply" class="py-24 px-6 md:px-20 max-w-4xl mx-auto">
-        <div class="text-center mb-16" data-aos="fade-up">
-            <h2 class="text-4xl font-black mb-4 flex items-center justify-center gap-3">
-                <span class="w-12 h-1 bg-blue-600"></span>
-                تقديم الوظائف
-                <span class="w-12 h-1 bg-blue-600"></span>
-            </h2>
-            <p class="text-gray-400">انضم إلى فريق العمل في ROX ROLEPLAY</p>
-        </div>
-
-        <div class="form-container" data-aos="fade-up">
-            <form id="applyForm">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-bold mb-2 text-gray-400">الاسم الثلاثي</label>
-                        <input type="text" id="fullName" class="form-input" placeholder="أدخل اسمك الكامل" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold mb-2 text-gray-400">العمر</label>
-                        <input type="number" id="age" class="form-input" placeholder="أدخل عمرك" required>
-                    </div>
-                </div>
-                
-                <label class="block text-sm font-bold mb-2 text-gray-400">Discord ID</label>
-                <input type="text" id="discordId" class="form-input" placeholder="سيتم تعبئته تلقائياً عند تسجيل الدخول" required readonly>
-                
-                <label class="block text-sm font-bold mb-2 text-gray-400">القسم المطلوب</label>
-                <select id="jobType" class="form-input cursor-pointer" required>
-                    <option value="" disabled selected>اختر القسم...</option>
-                    <option value="police">السلك العسكري (Police)</option>
-                    <option value="ems">الخدمات الطبية (EMS)</option>
-                </select>
-
-                <label class="block text-sm font-bold mb-2 text-gray-400">لماذا تريد الانضمام إلينا؟</label>
-                <textarea id="reason" class="form-input h-40 resize-none" placeholder="اكتب سبب رغبتك في الانضمام بالتفصيل" required></textarea>
-                
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-blue-600/30 transform hover:scale-[1.02]">
-                    إرسال الطلب الآن <i class="fas fa-paper-plane mr-2"></i>
-                </button>
-            </form>
         </div>
     </section>
 
@@ -1276,15 +1202,16 @@
         const cursor = document.querySelector('.cursor');
         const cursorDot = document.querySelector('.cursor-dot');
         let mouseX = 0, mouseY = 0;
-        let isHovering = false;
 
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
             
             requestAnimationFrame(() => {
-                cursor.style.transform = `translate3d(${mouseX - 10}px, ${mouseY - 10}px, 0) scale(${isHovering ? 2.5 : 1})`;
-                cursorDot.style.transform = `translate3d(${mouseX - 2}px, ${mouseY - 2}px, 0)`;
+                cursor.style.left = `${mouseX}px`;
+                cursor.style.top = `${mouseY}px`;
+                cursorDot.style.left = `${mouseX}px`;
+                cursorDot.style.top = `${mouseY}px`;
             });
         });
 
@@ -1292,14 +1219,10 @@
         const interactiveElements = document.querySelectorAll('a, button, .rule-card, .nav-item, .hexagon-logo');
         interactiveElements.forEach(el => {
             el.addEventListener('mouseenter', () => {
-                isHovering = true;
-                cursor.style.borderColor = 'white';
-                cursor.style.background = 'rgba(0, 210, 255, 0.1)';
+                cursor.classList.add('cursor-hover');
             });
             el.addEventListener('mouseleave', () => {
-                isHovering = false;
-                cursor.style.borderColor = '#00d2ff';
-                cursor.style.background = 'transparent';
+                cursor.classList.remove('cursor-hover');
             });
         });
 
