@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>قوانين سيرفر Rox - FiveM</title>
+    <title>ROX ROLEPLAY</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts - Cairo -->
@@ -148,123 +148,6 @@
             background-position: center;
             /* background-attachment: fixed; - Removed for performance */
         }
-        /* Custom Cursor */
-        .cursor {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #00d2ff;
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            top: 0;
-            left: 0;
-            transition: transform 0.08s ease-out;
-            will-change: transform;
-        }
-        .cursor.cursor-hover {
-            transform: scale(2) !important;
-            border-color: #ffffff;
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .cursor-dot {
-            width: 4px;
-            height: 4px;
-            background: #00d2ff;
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            top: 0;
-            left: 0;
-            will-change: transform;
-        }
-        /* Preloader */
-        #preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-        }
-        .loader {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #0a1128;
-            border-top: 5px solid #00d2ff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        /* Application Modal Style */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 2000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(10px);
-        }
-        .modal-content {
-            background: #0a1128;
-            border: 1px solid #00d2ff;
-            width: 90%;
-            max-width: 600px;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 0 30px rgba(0, 210, 255, 0.3);
-            position: relative;
-            transform: scale(0.8);
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .modal.active {
-            display: flex;
-        }
-        .modal.active .modal-content {
-            transform: scale(1);
-            opacity: 1;
-        }
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
-            font-size: 24px;
-            color: #9ca3af;
-            transition: color 0.3s;
-        }
-        .close-modal:hover {
-            color: #fff;
-        }
-        .form-input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(0, 210, 255, 0.2);
-            padding: 12px 15px;
-            border-radius: 10px;
-            color: white;
-            margin-bottom: 20px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        .form-input:focus {
-            border-color: #00d2ff;
-        }
-
         /* Custom Scrollbar for Admin Panel */
         .custom-scrollbar::-webkit-scrollbar {
             width: 5px;
@@ -324,6 +207,56 @@
             transform: translate(-50%, -50%) scale(1);
         }
 
+        /* Feedback Status Overlay */
+        .status-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 3000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(15px);
+        }
+        .status-overlay.active { display: flex; }
+        .status-icon {
+            width: 100px; height: 100px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 50px; margin-bottom: 20px; transform: scale(0); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .status-overlay.active .status-icon { transform: scale(1); }
+        .status-success { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 2px solid #10b981; box-shadow: 0 0 30px rgba(16, 185, 129, 0.4); }
+        .status-error { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 2px solid #ef4444; box-shadow: 0 0 30px rgba(239, 68, 68, 0.4); }
+        .status-text { font-size: 24px; font-weight: 900; color: white; text-align: center; }
+
+        /* Form Input Style for Apply Section */
+        .form-container {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 210, 255, 0.1);
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            padding: 15px 20px;
+            border-radius: 15px;
+            color: white;
+            margin-bottom: 25px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .form-input:focus {
+            border-color: #00d2ff;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+        }
+
         @media (max-width: 768px) {
             .navbar-top {
                 padding: 15px 20px;
@@ -332,9 +265,39 @@
                 display: none;
             }
         }
+
+        /* Custom Cursor */
+        .cursor { 
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #00d2ff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.1s ease;
+            transform: translate(-50%, -50%);
+        }
+        
+        .cursor-dot { 
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: #00d2ff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+        }
     </style>
 </head>
 <body class="antialiased">
+
+    <!-- Feedback Overlay -->
+    <div id="statusOverlay" class="status-overlay">
+        <div id="statusIcon" class="status-icon"></div>
+        <div id="statusText" class="status-text"></div>
+    </div>
 
     <!-- Preloader -->
     <div id="preloader">
@@ -343,10 +306,6 @@
             <div class="text-xl font-bold tracking-widest text-white">ROX</div>
         </div>
     </div>
-
-    <!-- Custom Cursor -->
-    <div class="cursor hidden md:block"></div>
-    <div class="cursor-dot hidden md:block"></div>
 
     <!-- Admin Panel -->
     <div id="adminPanel" class="admin-panel overflow-y-auto max-h-[90vh]">
@@ -429,13 +388,18 @@
         <i class="fas fa-user-shield"></i>
     </div>
 
+    <!-- Custom Cursor -->
+    <div class="cursor hidden md:block"></div>
+    <div class="cursor-dot hidden md:block"></div>
+
     <!-- Navigation Bar -->
     <nav class="navbar-top" data-aos="fade-down">
         <div class="navbar-links">
             <a href="#home" class="nav-item active">الرئيسية</a>
             <a href="#creators" class="nav-item">صناع المحتوى</a>
             <a href="#general" class="nav-item">القوانين</a>
-            <a href="apply.html" class="nav-item">تقديم الوظائف</a>
+            <a href="#apply" class="nav-item">تقديم الوظائف</a>
+            <a id="adminApplyLink" href="admin-apply.html" class="nav-item" style="display: none;">تقديم رقابة</a>
             <a href="#store" class="nav-item">المتجر</a>
         </div>
         
@@ -682,7 +646,7 @@
                 <i class="fas fa-user-md text-5xl text-blue-500 mb-6"></i>
                 <h3 class="text-2xl font-bold mb-4">الخدمات الطبية (EMS)</h3>
                 <p class="text-gray-400 mb-6">كن بطلاً وأنقذ حياة المواطنين في الحالات الطارئة.</p>
-                <a id="btn-ems" href="apply.html?type=ems" class="inline-block bg-blue-600 px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors">تقديم الآن</a>
+                <button id="btn-ems" onclick="scrollToApply('ems')" class="inline-block bg-blue-600 px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors">تقديم الآن</button>
             </div>
             <div id="card-police" class="rule-card p-10 rounded-3xl text-center border-blue-600/20 relative overflow-hidden" data-aos="fade-left">
                 <div id="lock-police" class="hidden absolute inset-0 bg-red-950/40 backdrop-blur-[2px] flex items-center justify-center z-20">
@@ -694,7 +658,7 @@
                 <i class="fas fa-shield-alt text-5xl text-blue-500 mb-6"></i>
                 <h3 class="text-2xl font-bold mb-4">السلك العسكري (Police)</h3>
                 <p class="text-gray-400 mb-6">ساهم في حفظ الأمن وفرض النظام داخل المدينة.</p>
-                <a id="btn-police" href="apply.html?type=police" class="inline-block bg-blue-600 px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors">تقديم الآن</a>
+                <button id="btn-police" onclick="scrollToApply('police')" class="inline-block bg-blue-600 px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors">تقديم الآن</button>
             </div>
         </div>
     </section>
@@ -805,6 +769,50 @@
         </div>
     </section>
 
+    <!-- Apply Section -->
+    <section id="apply" class="py-24 px-6 md:px-20 max-w-4xl mx-auto">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="text-4xl font-black mb-4 flex items-center justify-center gap-3">
+                <span class="w-12 h-1 bg-blue-600"></span>
+                تقديم الوظائف
+                <span class="w-12 h-1 bg-blue-600"></span>
+            </h2>
+            <p class="text-gray-400">انضم إلى فريق العمل في ROX ROLEPLAY</p>
+        </div>
+
+        <div class="form-container" data-aos="fade-up">
+            <form id="applyForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-gray-400">الاسم الثلاثي</label>
+                        <input type="text" id="fullName" class="form-input" placeholder="أدخل اسمك الكامل" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-gray-400">العمر</label>
+                        <input type="number" id="age" class="form-input" placeholder="أدخل عمرك" required>
+                    </div>
+                </div>
+                
+                <label class="block text-sm font-bold mb-2 text-gray-400">Discord ID</label>
+                <input type="text" id="discordId" class="form-input" placeholder="سيتم تعبئته تلقائياً عند تسجيل الدخول" required readonly>
+                
+                <label class="block text-sm font-bold mb-2 text-gray-400">القسم المطلوب</label>
+                <select id="jobType" class="form-input cursor-pointer" required>
+                    <option value="" disabled selected>اختر القسم...</option>
+                    <option value="police">السلك العسكري (Police)</option>
+                    <option value="ems">الخدمات الطبية (EMS)</option>
+                </select>
+
+                <label class="block text-sm font-bold mb-2 text-gray-400">لماذا تريد الانضمام إلينا؟</label>
+                <textarea id="reason" class="form-input h-40 resize-none" placeholder="اكتب سبب رغبتك في الانضمام بالتفصيل" required></textarea>
+                
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-blue-600/30 transform hover:scale-[1.02]">
+                    إرسال الطلب الآن <i class="fas fa-paper-plane mr-2"></i>
+                </button>
+            </form>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="py-12 border-t border-white/5 text-center bg-[#000000]">
         <div class="text-2xl font-black gradient-text mb-6">ROX ROLEPLAY</div>
@@ -883,6 +891,10 @@
                 ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
                 : 'https://cdn.discordapp.com/embed/avatars/0.png';
             
+            // Show Admin Apply Link
+            const adminApplyLink = document.getElementById('adminApplyLink');
+            if (adminApplyLink) adminApplyLink.style.display = 'block';
+
             // Auto fill discord ID in form if exists
             if (document.getElementById('discordId')) {
                 document.getElementById('discordId').value = user.id;
@@ -907,6 +919,129 @@
         function logout() {
             localStorage.removeItem('discordUser');
             window.location.reload();
+        }
+
+        // Form Submission Logic
+        document.getElementById('applyForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const discordUser = localStorage.getItem('discordUser');
+            if (!discordUser) {
+                alert('يرجى تسجيل الدخول عبر ديسكورد أولاً!');
+                return;
+            }
+
+            const type = document.getElementById('jobType').value;
+            
+            // Check Recruitment Status
+            const status = JSON.parse(localStorage.getItem('recruitmentStatus') || '{"police": true, "ems": true}');
+            if (!status[type]) {
+                const typeName = type === 'police' ? 'الشرطة' : 'EMS';
+                showFeedback(false, `نعتذر، التقديم لقسم ${typeName} مغلق حالياً.`);
+                return;
+            }
+
+            const data = {
+                fullName: document.getElementById('fullName').value,
+                age: document.getElementById('age').value,
+                discordId: document.getElementById('discordId').value,
+                reason: document.getElementById('reason').value
+            };
+
+            const appCode = 'ROX-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            const roleId = type === 'police' ? '1486744401014423654' : '1486744444853158089';
+            const webhookUrl = WEBHOOKS[type];
+            const embed = {
+                title: `🎫 تذكرة تقديم جديدة - ${type === 'police' ? 'الشرطة' : 'EMS'}`,
+                color: type === 'police' ? 3447003 : 3066993,
+                description: `قام **${data.fullName}** بإرسال طلب انضمام جديد.\n**كود الطلب:** \`${appCode}\``,
+                fields: [
+                    { name: '👤 الاسم الكامل', value: `\`${data.fullName}\``, inline: true },
+                    { name: '🎂 العمر', value: `\`${data.age}\``, inline: true },
+                    { name: '🆔 Discord ID', value: `\`${data.discordId}\``, inline: false },
+                    { name: '🎖️ الرتبة المطلوبة', value: `<@&${roleId}>`, inline: true },
+                    { name: '🔑 كود الطلب', value: `\`${appCode}\``, inline: true },
+                    { name: '📝 السبب', value: `\`\`\`${data.reason}\`\`\`` }
+                ],
+                footer: { text: `ROX ROLEPLAY | ID: ${data.discordId}` },
+                timestamp: new Date()
+            };
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        content: `📢 **طلب توظيف جديد** (كود: \`${appCode}\`)`,
+                        embeds: [embed],
+                        components: [
+                            {
+                                type: 1,
+                                components: [
+                                    {
+                                        type: 2,
+                                        style: 5,
+                                        label: "✅ قبول (تواصل معه)",
+                                        url: `https://discord.com/users/${data.discordId}`
+                                    },
+                                    {
+                                        type: 2,
+                                        style: 5,
+                                        label: "❌ رفض (تواصل معه)",
+                                        url: `https://discord.com/users/${data.discordId}`
+                                    },
+                                    {
+                                        type: 2,
+                                        style: 5,
+                                        label: "👤 الملف الشخصي",
+                                        url: `https://discord.com/users/${data.discordId}`
+                                    }
+                                ]
+                            }
+                        ]
+                    })
+                });
+
+                if (response.ok) {
+                    showFeedback(true, `تم التقديم بنجاح انتدر الرد فالدسكورد`);
+                    document.getElementById('applyForm').reset();
+                    // Sync with local stats for admin panel
+                    let apps = JSON.parse(localStorage.getItem('serverApps') || '[]');
+                    apps.unshift({ ...data, type, code: appCode, time: new Date().toISOString() });
+                    localStorage.setItem('serverApps', JSON.stringify(apps));
+                    updateAdminDashboard();
+                } else {
+                    showFeedback(false, 'حدث خطأ أثناء الإرسال!');
+                }
+            } catch (error) {
+                showFeedback(false, 'فشل الاتصال بالخادم!');
+            }
+        });
+
+        function showFeedback(success, text) {
+            const overlay = document.getElementById('statusOverlay');
+            const icon = document.getElementById('statusIcon');
+            const statusText = document.getElementById('statusText');
+            icon.className = 'status-icon ' + (success ? 'status-success' : 'status-error');
+            icon.innerHTML = success ? '<i class="fas fa-check"></i>' : '<i class="fas fa-times"></i>';
+            statusText.innerText = text;
+            overlay.style.display = 'flex';
+            setTimeout(() => overlay.classList.add('active'), 10);
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                setTimeout(() => overlay.style.display = 'none', 500);
+            }, 3000);
+        }
+
+        function scrollToApply(type) {
+            const applySection = document.getElementById('apply');
+            if (applySection) {
+                applySection.scrollIntoView({ behavior: 'smooth' });
+                const jobTypeDropdown = document.getElementById('jobType');
+                if (jobTypeDropdown && type) {
+                    jobTypeDropdown.value = type;
+                }
+            }
         }
 
         // Initialize Auth

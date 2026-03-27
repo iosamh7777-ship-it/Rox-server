@@ -40,7 +40,7 @@
             z-index: 1000;
             background: rgba(0, 0, 0, 0.9);
             padding: 15px 60px;
-            display: flex;
+            display: flex; 
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -110,33 +110,6 @@
             transition: all 0.3s;
         }
 
-        /* Custom Cursor */
-        .cursor { 
-            width: 20px; 
-            height: 20px; 
-            border: 2px solid #00d2ff; 
-            border-radius: 50%; 
-            position: fixed; 
-            pointer-events: none; 
-            z-index: 9999; 
-            top: 0;
-            left: 0;
-            transition: transform 0.08s ease-out; 
-            will-change: transform;
-        }
-        .cursor-dot { 
-            width: 4px; 
-            height: 4px; 
-            background: #00d2ff; 
-            border-radius: 50%; 
-            position: fixed; 
-            pointer-events: none; 
-            z-index: 9999; 
-            top: 0;
-            left: 0;
-            will-change: transform;
-        }
-
         /* Background Elements */
         .bg-glow {
             position: fixed;
@@ -191,6 +164,33 @@
             .navbar-top { padding: 15px 20px; }
             .form-container { padding: 30px 20px; }
         }
+
+        /* Custom Cursor */
+        .cursor { 
+            width: 20px; 
+            height: 20px; 
+            border: 2px solid #00d2ff; 
+            border-radius: 50%; 
+            position: fixed; 
+            pointer-events: none; 
+            z-index: 9999; 
+            top: 0;
+            left: 0;
+            transition: transform 0.08s ease-out; 
+            will-change: transform;
+        }
+        .cursor-dot { 
+            width: 4px; 
+            height: 4px; 
+            background: #00d2ff; 
+            border-radius: 50%; 
+            position: fixed; 
+            pointer-events: none; 
+            z-index: 9999; 
+            top: 0;
+            left: 0;
+            will-change: transform;
+        }
     </style>
 </head>
 <body>
@@ -201,13 +201,13 @@
         <div id="statusText" class="status-text"></div>
     </div>
 
-    <!-- Custom Cursor -->
-    <div class="cursor hidden md:block"></div>
-    <div class="cursor-dot hidden md:block"></div>
-
     <!-- Background Elements -->
     <div class="bg-glow"></div>
     <div class="bg-text">ROX</div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor hidden md:block"></div>
+    <div class="cursor-dot hidden md:block"></div>
 
     <!-- Navigation Bar -->
     <nav class="navbar-top">
@@ -215,9 +215,7 @@
             <a href="index.html" class="nav-item group">
                 <i class="fas fa-arrow-right ml-2 group-hover:-translate-x-1 transition-transform"></i> العودة للرئيسية
             </a>
-            <a href="https://www.Realmcity.com" target="_blank" class="nav-item group text-green-400 hover:text-green-300">
-                <i class="fas fa-globe ml-2 group-hover:scale-110 transition-transform"></i> زيارة الموقع
-            </a>
+            <a id="adminApplyLink" href="admin-apply.html" class="nav-item" style="display: none;">تقديم رقابة</a>
         </div>
         
         <div class="flex items-center gap-6">
@@ -334,12 +332,33 @@
                 ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
                 : 'https://cdn.discordapp.com/embed/avatars/0.png';
             document.getElementById('discordId').value = user.id;
+
+            // Show Admin Apply Link
+            const adminApplyLink = document.getElementById('adminApplyLink');
+            if (adminApplyLink) adminApplyLink.style.display = 'block';
         }
 
         function logout() {
             localStorage.removeItem('discordUser');
             window.location.reload();
         }
+
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+        let mouseX = 0, mouseY = 0;
+        let isHovering = false;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Using requestAnimationFrame for smoother performance
+            requestAnimationFrame(() => {
+                cursor.style.transform = `translate3d(${mouseX - 10}px, ${mouseY - 10}px, 0) scale(${isHovering ? 2.5 : 1})`;
+                cursorDot.style.transform = `translate3d(${mouseX - 2}px, ${mouseY - 2}px, 0)`;
+            });
+        });
 
         // Form Submission
         document.getElementById('applyForm').addEventListener('submit', async (e) => {
@@ -356,7 +375,8 @@
             // Check Recruitment Status
             const status = JSON.parse(localStorage.getItem('recruitmentStatus') || '{"police": true, "ems": true}');
             if (!status[type]) {
-                showFeedback(false, `نعتذر، التقديم لقسم ${type === 'police' ? 'الشرطة' : 'EMS'} مغلق حالياً.`);
+                const typeName = type === 'police' ? 'الشرطة' : 'EMS';
+                showFeedback(false, `نعتذر، التقديم لقسم ${typeName} مغلق حالياً.`);
                 return;
             }
 
@@ -452,23 +472,6 @@
                 if(success) window.location.href = 'index.html';
             }, 3000);
         }
-
-        // Custom Cursor
-        const cursor = document.querySelector('.cursor');
-        const cursorDot = document.querySelector('.cursor-dot');
-        let mouseX = 0, mouseY = 0;
-        let isHovering = false;
-
-        window.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            
-            // Using requestAnimationFrame for smoother performance
-            requestAnimationFrame(() => {
-                cursor.style.transform = `translate3d(${mouseX - 10}px, ${mouseY - 10}px, 0) scale(${isHovering ? 2.5 : 1})`;
-                cursorDot.style.transform = `translate3d(${mouseX - 2}px, ${mouseY - 2}px, 0)`;
-            });
-        });
 
         // Initialize
         window.addEventListener('load', () => {
