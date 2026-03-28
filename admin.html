@@ -53,8 +53,9 @@
             <a href="#" class="nav-link active" onclick="showSection('dashboard', this)"><i class="fas fa-chart-line"></i> الإحصائيات</a>
             <a href="#" class="nav-link" onclick="showSection('applications', this)"><i class="fas fa-file-invoice"></i> التقديمات</a>
             <a href="#" class="nav-link" onclick="showSection('store', this)"><i class="fas fa-store"></i> المتجر</a>
-            <a href="#" class="nav-link" onclick="showSection('coupons', this)"><i class="fas fa-ticket-alt"></i> الكوبونات</a>
+            <a href="#" class="nav-link" onclick="showSection('coupons', this)"><i class="fas fa-ticket-alt"></i> أكواد الخصم</a>
             <a href="#" class="nav-link" onclick="showSection('chefs', this)"><i class="fas fa-user-tie"></i> رؤساء الأقسام</a>
+            <a href="#" class="nav-link" onclick="showSection('settings', this)"><i class="fas fa-cog"></i> الإعدادات</a>
             <a href="#" class="nav-link" onclick="showSection('logs', this)"><i class="fas fa-history"></i> السجلات</a>
             <div class="pt-10 px-6">
                 <a href="index.html" class="w-full bg-white/5 text-center py-4 rounded-2xl block hover:bg-white/10 transition-all font-bold text-sm">العودة للموقع</a>
@@ -170,26 +171,23 @@
 
         <!-- Store Management Section -->
         <section id="store" class="admin-section" data-aos="fade-up">
-            <h1 class="text-4xl font-black mb-8">إدارة المتجر</h1>
-            <div class="stat-card max-w-2xl">
-                <div class="flex items-center justify-between p-6 bg-white/5 rounded-3xl border border-white/5 mb-8">
+            <div class="flex justify-between items-center mb-10">
+                <h1 class="text-4xl font-black">إدارة المتجر</h1>
+                <button onclick="document.getElementById('productModal').classList.add('flex')" class="bg-blue-600 px-8 py-3 rounded-2xl font-black hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20"><i class="fas fa-plus mr-2"></i> إضافة منتج جديد</button>
+            </div>
+
+            <div class="stat-card border-red-500/20 bg-red-500/5 mb-10">
+                <div class="flex items-center justify-between">
                     <div>
                         <h4 class="font-black text-xl mb-1">حالة المتجر الحالية</h4>
                         <p id="store-status-text" class="text-green-500 font-bold">المتجر مفتوح الآن ويستقبل الطلبات</p>
                     </div>
                     <button id="toggleStoreBtn" onclick="toggleStoreStatus()" class="bg-red-600 px-8 py-3 rounded-2xl font-black hover:bg-red-700 transition-all shadow-xl shadow-red-600/20">إغلاق المتجر</button>
                 </div>
-                <div class="space-y-6">
-                    <h4 class="font-black text-lg">إعدادات سريعة</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <button onclick="addLog('تم تحديث إعدادات المتجر', 'store')" class="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-blue-500 transition-all text-center">
-                            <i class="fas fa-sync mb-3 text-2xl text-blue-500"></i><br>تحديث البيانات
-                        </button>
-                        <button onclick="addLog('تم تنظيف الكاش للمتجر', 'system')" class="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-yellow-500 transition-all text-center">
-                            <i class="fas fa-broom mb-3 text-2xl text-yellow-500"></i><br>تنظيف الكاش
-                        </button>
-                    </div>
-                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="products-grid">
+                <!-- Products via JS -->
             </div>
         </section>
 
@@ -224,6 +222,45 @@
             <div class="stat-card p-0 overflow-hidden">
                 <div id="logs-list" class="max-h-[70vh] overflow-y-auto">
                     <!-- Logs via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- General Settings Section -->
+        <section id="settings" class="admin-section" data-aos="fade-up">
+            <h1 class="text-4xl font-black mb-10">إعدادات الموقع العامة</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="stat-card">
+                    <h3 class="font-black text-xl mb-6">المعلومات الأساسية</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-xs font-black text-gray-500 mb-2 uppercase">اسم السيرفر</label>
+                            <input type="text" id="set-server-name" class="form-input" placeholder="Realm City">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-black text-gray-500 mb-2 uppercase">رابط الديسكورد</label>
+                            <input type="text" id="set-discord-link" class="form-input" placeholder="https://discord.gg/xxx">
+                        </div>
+                        <button onclick="saveGeneralSettings()" class="w-full bg-blue-600 py-4 rounded-2xl font-black hover:bg-blue-700 transition-all">حفظ التغييرات</button>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="font-black text-xl mb-6">روابط الويبهوك (Webhooks)</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-xs font-black text-gray-500 mb-2 uppercase">ويبهوك الشرطة</label>
+                            <input type="text" id="set-webhook-police" class="form-input">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-black text-gray-500 mb-2 uppercase">ويبهوك الإسعاف</label>
+                            <input type="text" id="set-webhook-ems" class="form-input">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-black text-gray-500 mb-2 uppercase">ويبهوك المتجر</label>
+                            <input type="text" id="set-webhook-store" class="form-input">
+                        </div>
+                        <button onclick="saveWebhookSettings()" class="w-full bg-emerald-600 py-4 rounded-2xl font-black hover:bg-emerald-700 transition-all">تحديث الروابط</button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -267,6 +304,50 @@
         </div>
     </div>
 
+    <!-- Modal Product -->
+    <div id="productModal" class="fixed inset-0 bg-black/90 z-[20000] hidden items-center justify-center p-6 backdrop-filter blur-md">
+        <div class="bg-[#0d0d0d] border border-blue-500/20 p-10 rounded-[40px] w-full max-w-lg">
+            <h2 class="text-3xl font-black mb-8 text-center">إضافة منتج للمتجر</h2>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-black text-gray-500 mb-2">اسم المنتج</label>
+                        <input type="text" id="prod-name" class="form-input" placeholder="مثلاً: Hyper Car S+">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-gray-500 mb-2">السعر ($)</label>
+                        <input type="text" id="prod-price" class="form-input" placeholder="25.00">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-black text-gray-500 mb-2">رابط الصورة</label>
+                    <input type="text" id="prod-img" class="form-input" placeholder="https://unsplash.com/...">
+                </div>
+                <div>
+                    <label class="block text-xs font-black text-gray-500 mb-2">القسم</label>
+                    <select id="prod-cat" class="form-input">
+                        <option value="vehicles">سيارات</option>
+                        <option value="gangs">عصابات</option>
+                        <option value="rccoins">عملات RC</option>
+                        <option value="services">خدمات</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-black text-gray-500 mb-2">الأمر البرمجي (Command)</label>
+                    <input type="text" id="prod-cmd" class="form-input" placeholder="givecar {id} comet2">
+                </div>
+                <div>
+                    <label class="block text-xs font-black text-gray-500 mb-2">وصف المنتج</label>
+                    <textarea id="prod-desc" class="form-input h-24" placeholder="سيارة سريعة بتصميم فريد..."></textarea>
+                </div>
+                <div class="flex gap-4 pt-4">
+                    <button onclick="saveProduct()" class="flex-grow bg-blue-600 py-4 rounded-2xl font-black hover:bg-blue-700">حفظ المنتج</button>
+                    <button onclick="document.getElementById('productModal').classList.remove('flex')" class="px-8 bg-white/5 rounded-2xl font-bold">إلغاء</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Coupon -->
     <div id="couponModal" class="fixed inset-0 bg-black/90 z-[20000] hidden items-center justify-center p-6 backdrop-filter blur-md">
         <div class="bg-[#0d0d0d] border border-blue-500/20 p-10 rounded-[40px] w-full max-w-md">
@@ -302,7 +383,19 @@
             localStorage.setItem('realm_settings', JSON.stringify(settings));
         };
 
-        const getTable = (name) => JSON.parse(localStorage.getItem(`realm_${name}`) || '[]');
+        const getTable = (name) => {
+            const data = localStorage.getItem(`realm_${name}`);
+            if (!data && name === 'products') {
+                // Initial Sample Products
+                const initial = [
+                    { id: 'p1', name: 'Sports Class A', price: '$20.00', img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80', cat: 'vehicles', cmd: 'givecar {id} comet2', desc: 'سيارة رياضية بتعديلات مخصصة وسرعة عالية.' },
+                    { id: 'p2', name: 'Hyper VIP S+', price: '$45.00', img: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=600&q=80', cat: 'vehicles', cmd: 'givecar {id} t20', desc: 'أسرع سيارة في المدينة بتصميم مستقبلي فريد.' }
+                ];
+                localStorage.setItem('realm_products', JSON.stringify(initial));
+                return initial;
+            }
+            return JSON.parse(data || '[]');
+        };
         const setTable = (name, data) => localStorage.setItem(`realm_${name}`, JSON.stringify(data));
 
         // --- CONFIGURATION ---
@@ -369,6 +462,32 @@
             if (id === 'chefs') renderChefs();
             if (id === 'coupons') renderCoupons();
             if (id === 'logs') renderLogs();
+            if (id === 'settings') renderSettings();
+        }
+
+        function renderSettings() {
+            document.getElementById('set-server-name').value = getSetting('server_name', 'Realm City');
+            document.getElementById('set-discord-link').value = getSetting('discord_link', 'https://discord.gg/FxkvMuNe');
+            document.getElementById('set-webhook-police').value = getSetting('webhook_police', 'https://discord.com/api/webhooks/1486839086235783289/hqUk-IniFfHX21Sh3qpcVlMvTWyOgpZQV4qmFu5-I0EC-qrsj9GKAvS7ldAKXQrKfE7B');
+            document.getElementById('set-webhook-ems').value = getSetting('webhook_ems', 'https://discord.com/api/webhooks/1486839546019844337/AgEDCX_kjwdV40yEn2AopABGfUoptcgSIzZWDyWHbhiEbPpOhVxbiT_2yEgvCO_K8JOy');
+            document.getElementById('set-webhook-store').value = getSetting('webhook_store', 'https://discord.com/api/webhooks/1487153603192946748/KK2bnoUyNTMNJcHY1xexxhFt1rwJ99rbq8eJYwf5TMKGMbHrHjRVp45SnvLeqx6sI9Ic');
+        }
+
+        function saveGeneralSettings() {
+            const name = document.getElementById('set-server-name').value;
+            const link = document.getElementById('set-discord-link').value;
+            setSetting('server_name', name);
+            setSetting('discord_link', link);
+            addLog(`تم تحديث معلومات السيرفر: ${name}`, 'system');
+            alert("تم الحفظ بنجاح!");
+        }
+
+        function saveWebhookSettings() {
+            setSetting('webhook_police', document.getElementById('set-webhook-police').value);
+            setSetting('webhook_ems', document.getElementById('set-webhook-ems').value);
+            setSetting('webhook_store', document.getElementById('set-webhook-store').value);
+            addLog("تم تحديث روابط الويبهوك", 'system');
+            alert("تم الحفظ بنجاح!");
         }
 
         // --- DASHBOARD ---
@@ -378,6 +497,7 @@
                 const chefs = getTable('chefs');
                 const promos = getTable('coupons');
                 const sales = getTable('sales');
+                const products = getTable('products');
 
                 document.getElementById('stat-apps').innerText = apps.length;
                 document.getElementById('stat-chefs').innerText = chefs.length;
@@ -499,6 +619,53 @@
             document.getElementById('store-status-text').innerText = isOpen ? 'المتجر مفتوح الآن' : 'المتجر مغلق حالياً';
             document.getElementById('store-status-text').className = isOpen ? 'text-green-500 font-bold' : 'text-red-500 font-bold';
             document.getElementById('toggleStoreBtn').innerText = isOpen ? 'إغلاق المتجر' : 'فتح المتجر';
+            renderProducts();
+        }
+
+        function saveProduct() {
+            const product = {
+                id: 'prod-' + Date.now(),
+                name: document.getElementById('prod-name').value,
+                price: '$' + document.getElementById('prod-price').value.replace('$', ''),
+                img: document.getElementById('prod-img').value || 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80',
+                cat: document.getElementById('prod-cat').value,
+                cmd: document.getElementById('prod-cmd').value,
+                desc: document.getElementById('prod-desc').value
+            };
+            if (!product.name || !product.price || !product.cmd) return alert("يرجى ملء كافة البيانات");
+            const products = getTable('products');
+            products.push(product);
+            setTable('products', products);
+            document.getElementById('productModal').classList.remove('flex');
+            renderProducts();
+            addLog(`منتج جديد: ${product.name}`, 'store');
+        }
+
+        function renderProducts() {
+            const products = getTable('products');
+            document.getElementById('products-grid').innerHTML = products.length > 0 ? products.map(p => `
+                <div class="stat-card p-0 overflow-hidden group">
+                    <img src="${p.img}" class="w-full h-40 object-cover opacity-60 group-hover:opacity-100 transition-all">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-black text-lg">${p.name}</h4>
+                            <span class="text-blue-500 font-bold">${p.price}</span>
+                        </div>
+                        <p class="text-[10px] text-gray-500 mb-4 uppercase">${p.cat}</p>
+                        <div class="flex gap-2">
+                            <button onclick="deleteProduct('${p.id}')" class="flex-grow bg-red-600/10 text-red-500 py-2 rounded-xl text-xs font-bold hover:bg-red-600 hover:text-white transition-all">حذف</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('') : '<p class="text-center text-gray-600 py-10 w-full col-span-3">لا يوجد منتجات حالياً</p>';
+        }
+
+        function deleteProduct(id) {
+            if (!confirm("حذف المنتج؟")) return;
+            let products = getTable('products');
+            products = products.filter(p => p.id !== id);
+            setTable('products', products);
+            renderProducts();
         }
 
         async function saveCoupon() {

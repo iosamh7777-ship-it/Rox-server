@@ -189,7 +189,7 @@
         <div class="inline-block bg-blue-600/10 border border-blue-500/20 px-6 py-2 rounded-full mb-6">
             <span class="text-blue-500 font-black text-sm tracking-widest uppercase">نظام CFW المطور v2.0</span>
         </div>
-        <h1 class="text-7xl font-black mb-6 bg-gradient-to-b from-white to-gray-500 bg-clip-text text-transparent">متجر Realm City</h1>
+        <h1 class="text-7xl font-black mb-6 bg-gradient-to-b from-white to-gray-500 bg-clip-text text-transparent">متجر <span class="server-name-txt">Realm City</span></h1>
         <p class="text-gray-400 text-xl max-w-3xl mx-auto leading-relaxed">تجارب فريدة، ميزات حصرية، وتنفيذ تلقائي فوري. ادعم مجتمعنا واحصل على ميزاتك داخل السيرفر خلال ثوانٍ.</p>
     </header>
 
@@ -202,121 +202,28 @@
             <button class="tab-btn" onclick="switchTab('services', this)"><i class="fas fa-bolt"></i> الخدمات</button>
         </div>
 
-        <!-- Vehicles Section -->
+        <!-- Dynamic Store Sections -->
         <div id="vehicles" class="store-section active">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="rule-card p-6" data-aos="fade-up">
-                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80" class="w-full h-48 object-cover rounded-2xl mb-6" alt="Car">
-                    <h3 class="text-2xl font-black mb-2">Sports Class A</h3>
-                    <p class="text-gray-400 mb-6 text-sm">سيارة رياضية بتعديلات مخصصة وسرعة عالية.</p>
-                    <div class="flex justify-between items-center">
-                        <span class="text-2xl font-black">$20.00</span>
-                        <button onclick="openCheckout('Sports Car A', '$20.00', 'givecar {id} comet2')" class="bg-blue-600 px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition-all">شراء</button>
-                    </div>
-                </div>
-                <div class="rule-card p-6" data-aos="fade-up" data-aos-delay="100">
-                    <img src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=600&q=80" class="w-full h-48 object-cover rounded-2xl mb-6" alt="Car">
-                    <h3 class="text-2xl font-black mb-2">Hyper VIP S+</h3>
-                    <p class="text-gray-400 mb-6 text-sm">أسرع سيارة في المدينة بتصميم مستقبلي فريد.</p>
-                    <div class="flex justify-between items-center">
-                        <span class="text-2xl font-black">$45.00</span>
-                        <button onclick="openCheckout('Hyper Car S+', '$45.00', 'givecar {id} t20')" class="bg-blue-600 px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition-all">شراء</button>
-                    </div>
-                </div>
-                <div class="rule-card p-6" data-aos="fade-up" data-aos-delay="200">
-                    <img src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=600&q=80" class="w-full h-48 object-cover rounded-2xl mb-6" alt="Car">
-                    <h3 class="text-2xl font-black mb-2">SUV Armored VIP</h3>
-                    <p class="text-gray-400 mb-6 text-sm">سيارة دفع رباعي مصفحة للحماية القصوى.</p>
-                    <div class="flex justify-between items-center">
-                        <span class="text-2xl font-black">$35.00</span>
-                        <button onclick="openCheckout('SUV Armored', '$35.00', 'givecar {id} ballage')" class="bg-blue-600 px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition-all">شراء</button>
-                    </div>
-                </div>
-                <div class="rule-card p-6" data-aos="fade-up" data-aos-delay="300">
-                    <img src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&w=600&q=80" class="w-full h-48 object-cover rounded-2xl mb-6" alt="Car">
-                    <h3 class="text-2xl font-black mb-2">Classic Collector</h3>
-                    <p class="text-gray-400 mb-6 text-sm">سيارة كلاسيكية نادرة لهواة التميز.</p>
-                    <div class="flex justify-between items-center">
-                        <span class="text-2xl font-black">$15.00</span>
-                        <button onclick="openCheckout('Classic Car', '$15.00', 'givecar {id} zentorno')" class="bg-blue-600 px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition-all">شراء</button>
-                    </div>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="grid-vehicles">
+                <!-- Items via JS -->
             </div>
         </div>
 
-        <!-- Gangs Section -->
         <div id="gangs" class="store-section">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="rule-card p-10 text-center" data-aos="fade-up">
-                    <i class="fas fa-hand-fist text-6xl text-red-500 mb-8"></i>
-                    <h3 class="text-2xl font-black mb-2">تأسيس عصابة (Basic)</h3>
-                    <p class="text-gray-400 mb-8">إنشاء عصابة خاصة بك مع مقر بسيط.</p>
-                    <div class="text-4xl font-black mb-8 text-white">$40.00</div>
-                    <button onclick="openCheckout('Basic Gang', '$40.00', 'creategang {id} basic')" class="w-full bg-red-600/20 border border-red-500/30 py-4 rounded-2xl font-black hover:bg-red-600 transition-all">شراء الآن</button>
-                </div>
-                <div class="rule-card p-10 text-center scale-105 border-red-500/40 bg-red-500/5" data-aos="fade-up" data-aos-delay="100">
-                    <div class="badge-popular" style="background: #ef4444;">الأقوى</div>
-                    <i class="fas fa-skull text-6xl text-red-500 mb-8"></i>
-                    <h3 class="text-2xl font-black mb-2">تأسيس عصابة (Elite)</h3>
-                    <p class="text-gray-400 mb-8">مقر فاخر، سيارات مخصصة، وأسلحة خاصة.</p>
-                    <div class="text-4xl font-black mb-8 text-white">$80.00</div>
-                    <button onclick="openCheckout('Elite Gang', '$80.00', 'creategang {id} elite')" class="w-full bg-red-600 py-4 rounded-2xl font-black hover:bg-red-700 transition-all shadow-xl shadow-red-600/20">شراء الآن</button>
-                </div>
-                <div class="rule-card p-10 text-center" data-aos="fade-up" data-aos-delay="200">
-                    <i class="fas fa-gun text-6xl text-red-500 mb-8"></i>
-                    <h3 class="text-2xl font-black mb-2">باقة الأسلحة</h3>
-                    <p class="text-gray-400 mb-8">تزويد مخزن العصابة بأسلحة متطورة.</p>
-                    <div class="text-4xl font-black mb-8 text-white">$25.00</div>
-                    <button onclick="openCheckout('Gang Weapons', '$25.00', 'givegangweapons {id}')" class="w-full bg-red-600/20 border border-red-500/30 py-4 rounded-2xl font-black hover:bg-red-600 transition-all">شراء الآن</button>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="grid-gangs">
+                <!-- Items via JS -->
             </div>
         </div>
 
-        <!-- RC Coins Section -->
         <div id="rccoins" class="store-section">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="rule-card p-10 text-center" data-aos="fade-up">
-                    <i class="fas fa-coins text-6xl text-yellow-500 mb-8"></i>
-                    <h3 class="text-2xl font-black mb-2">1,000 RC Coin</h3>
-                    <p class="text-gray-400 mb-8">عملات لشراء المنتجات الحصرية داخل اللعبة.</p>
-                    <div class="text-4xl font-black mb-8 text-white">$10.00</div>
-                    <button onclick="openCheckout('1000 RC Coins', '$10.00', 'addcoins {id} 1000')" class="w-full bg-yellow-600/20 border border-yellow-500/30 py-4 rounded-2xl font-black hover:bg-yellow-600 text-yellow-500 hover:text-black transition-all">شراء الآن</button>
-                </div>
-                <div class="rule-card p-10 text-center scale-105 border-yellow-500/40 bg-yellow-500/5" data-aos="fade-up" data-aos-delay="100">
-                    <div class="badge-popular" style="background: #eab308;">توفير كبير</div>
-                    <i class="fas fa-coins text-7xl text-yellow-500 mb-8"></i>
-                    <h3 class="text-2xl font-black mb-2">5,000 RC Coin</h3>
-                    <p class="text-gray-400 mb-8">باقة العملات الذهبية مع بونص 10%.</p>
-                    <div class="text-4xl font-black mb-8 text-white">$45.00</div>
-                    <button onclick="openCheckout('5000 RC Coins', '$45.00', 'addcoins {id} 5000')" class="w-full bg-yellow-600 text-black py-4 rounded-2xl font-black hover:bg-yellow-700 transition-all shadow-xl shadow-yellow-600/20">شراء الآن</button>
-                </div>
-                <div class="rule-card p-10 text-center" data-aos="fade-up" data-aos-delay="200">
-                    <i class="fas fa-coins text-8xl text-yellow-500 mb-8"></i>
-                    <h3 class="text-2xl font-black mb-2">10,000 RC Coin</h3>
-                    <p class="text-gray-400 mb-8">أكبر باقة عملات متوفرة في المتجر.</p>
-                    <div class="text-4xl font-black mb-8 text-white">$80.00</div>
-                    <button onclick="openCheckout('10000 RC Coins', '$80.00', 'addcoins {id} 10000')" class="w-full bg-yellow-600/20 border border-yellow-500/30 py-4 rounded-2xl font-black hover:bg-yellow-600 text-yellow-500 hover:text-black transition-all">شراء الآن</button>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="grid-rccoins">
+                <!-- Items via JS -->
             </div>
         </div>
 
-        <!-- Services Section -->
         <div id="services" class="store-section">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="rule-card p-10 text-center" data-aos="fade-up" data-aos-delay="100">
-                    <i class="fas fa-id-card text-6xl text-blue-500 mb-8"></i>
-                    <h3 class="text-2xl font-black mb-2 text-blue-400">Name Change</h3>
-                    <p class="text-gray-400 mb-8">تغيير اسم الشخصية داخل اللعبة</p>
-                    <div class="text-4xl font-black mb-8 text-white">$5.00</div>
-                    <button onclick="openCheckout('Name Change', '$5.00', 'rename {id}')" class="w-full bg-blue-600/20 border border-blue-500/30 py-4 rounded-2xl font-black hover:bg-blue-600 transition-all">طلب الخدمة</button>
-                </div>
-                <div class="rule-card p-10 text-center" data-aos="fade-up" data-aos-delay="200">
-                    <i class="fas fa-exchange-alt text-6xl text-yellow-500 mb-8"></i>
-                    <h3 class="text-2xl font-black mb-2 text-yellow-400">Account Transfer</h3>
-                    <p class="text-gray-400 mb-8">نقل ممتلكاتك لحساب آخر</p>
-                    <div class="text-4xl font-black mb-8 text-white">$15.00</div>
-                    <button onclick="openCheckout('Transfer', '$15.00', 'transfer {id}')" class="w-full bg-yellow-600/20 border border-yellow-500/30 py-4 rounded-2xl font-black hover:bg-yellow-600 transition-all">طلب الخدمة</button>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="grid-services">
+                <!-- Items via JS -->
             </div>
         </div>
 
@@ -379,13 +286,16 @@
         // Admin Panel Logic
         async function updateStoreUI() {
             try {
+                // Update Server Name
+                const serverName = getSetting('server_name', 'Realm City');
+                document.querySelectorAll('.server-name-txt').forEach(el => el.innerText = serverName);
+
                 const overlay = document.getElementById('storeClosedOverlay');
                 const isOpen = getSetting('store_open', true);
                 
                 if (isOpen) {
                     overlay.classList.remove('active');
                 } else {
-                    // Check if current user is admin/chef - they can bypass the red screen
                     const user = JSON.parse(localStorage.getItem('discordUser'));
                     let isStaff = false;
                     if (user) {
@@ -395,15 +305,40 @@
                             if (chefs.some(c => c.id === user.id)) isStaff = true;
                         }
                     }
-
-                    if (!isStaff) {
-                        overlay.classList.add('active');
-                    } else {
-                        overlay.classList.remove('active');
-                        console.log("Staff bypass enabled for closed store.");
-                    }
+                    if (!isStaff) overlay.classList.add('active');
+                    else overlay.classList.remove('active');
                 }
+
+                renderDynamicProducts();
             } catch (e) { console.error("Store Status Error:", e); }
+        }
+
+        function renderDynamicProducts() {
+            const products = JSON.parse(localStorage.getItem('realm_products') || '[]');
+            const categories = ['vehicles', 'gangs', 'rccoins', 'services'];
+            
+            categories.forEach(cat => {
+                const grid = document.getElementById(`grid-${cat}`);
+                if (!grid) return;
+                
+                const catProds = products.filter(p => p.cat === cat);
+                if (catProds.length === 0) {
+                    grid.innerHTML = '<p class="text-center text-gray-600 py-10 col-span-3 font-bold">لا يوجد منتجات في هذا القسم حالياً</p>';
+                    return;
+                }
+
+                grid.innerHTML = catProds.map((p, index) => `
+                    <div class="rule-card p-6" data-aos="fade-up" data-aos-delay="${index * 100}">
+                        <img src="${p.img}" class="w-full h-48 object-cover rounded-2xl mb-6" alt="${p.name}">
+                        <h3 class="text-2xl font-black mb-2">${p.name}</h3>
+                        <p class="text-gray-400 mb-6 text-sm">${p.desc || ''}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl font-black">${p.price}</span>
+                            <button onclick="openCheckout('${p.name}', '${p.price}', '${p.cmd}')" class="bg-blue-600 px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition-all">شراء</button>
+                        </div>
+                    </div>
+                `).join('');
+            });
         }
 
         async function checkAdminAccess(user) {
