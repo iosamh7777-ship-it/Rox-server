@@ -369,7 +369,13 @@
         // --- DATABASE CONFIGURATION ---
         const SUPABASE_URL = 'https://your-project.supabase.co';
         const SUPABASE_KEY = 'your-anon-key';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        let _supabase;
+        try {
+            if (SUPABASE_URL !== 'https://your-project.supabase.co') {
+                _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+        } catch (e) { console.error("Supabase Init Error:", e); }
 
         const CLIENT_ID = '1486841317316231310';
         const REDIRECT_URI = window.location.href.split('#')[0].split('?')[0];
@@ -377,13 +383,16 @@
         const ADMIN_IDS = ['609296092835741696', '579499056536092672', '1026172587119755304', '1029823456386228356'];
 
         // Admin Panel Logic (Now points to admin.html)
-        const ADMIN_IDS = ['609296092835741696', '579499056536092672', '1026172587119755304', '1029823456386228356'];
-
         async function updateStoreUI() {
             try {
-                const { data } = await supabase.from('settings').select('value').eq('key', 'store_open').single();
-                const isOpen = data?.value !== false;
                 const overlay = document.getElementById('storeClosedOverlay');
+                if (!_supabase) {
+                    overlay.classList.remove('active');
+                    return;
+                }
+
+                const { data } = await _supabase.from('settings').select('value').eq('key', 'store_open').single();
+                const isOpen = data?.value !== false;
                 
                 if (isOpen) {
                     overlay.classList.remove('active');
@@ -394,7 +403,7 @@
                     if (user) {
                         if (ADMIN_IDS.includes(user.id)) isStaff = true;
                         else {
-                            const { data: chefs } = await supabase.from('chefs').select('*').eq('id', user.id);
+                            const { data: chefs } = await _supabase.from('chefs').select('*').eq('id', user.id);
                             if (chefs && chefs.length > 0) isStaff = true;
                         }
                     }
@@ -413,13 +422,17 @@
             if (!user) return;
             
             try {
-                const { data: chefs } = await supabase.from('chefs').select('*').eq('id', user.id);
+                let isChef = false;
+                if (_supabase) {
+                    const { data: chefs } = await _supabase.from('chefs').select('*').eq('id', user.id);
+                    isChef = chefs && chefs.length > 0;
+                }
                 const isAdmin = ADMIN_IDS.includes(user.id);
-                const isChef = chefs && chefs.length > 0;
 
                 if (isAdmin || isChef) {
                     document.getElementById('adminBtn').style.display = 'flex';
-                    document.getElementById('storeClosedOverlay').classList.remove('active');
+                    const overlay = document.getElementById('storeClosedOverlay');
+                    if (overlay) overlay.classList.remove('active');
                 } else {
                     document.getElementById('adminBtn').style.display = 'none';
                     updateStoreUI(); 

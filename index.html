@@ -195,7 +195,13 @@
         // --- DATABASE CONFIGURATION ---
         const SUPABASE_URL = 'https://your-project.supabase.co';
         const SUPABASE_KEY = 'your-anon-key';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        let _supabase;
+        try {
+            if (SUPABASE_URL !== 'https://your-project.supabase.co') {
+                _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+        } catch (e) { console.error("Supabase Init Error:", e); }
 
         const CLIENT_ID = '1486841317316231310';
         const REDIRECT_URI = window.location.href.split('#')[0].split('?')[0];
@@ -236,9 +242,11 @@
             // Check in Database if Chefs or Admin
             let isStaff = false;
             if (ADMIN_IDS.includes(user.id)) isStaff = true;
-            else {
-                const { data: chefs } = await supabase.from('chefs').select('*').eq('id', user.id);
-                if (chefs && chefs.length > 0) isStaff = true;
+            else if (_supabase) {
+                try {
+                    const { data: chefs } = await _supabase.from('chefs').select('*').eq('id', user.id);
+                    if (chefs && chefs.length > 0) isStaff = true;
+                } catch (e) { console.error("Chef Check Error:", e); }
             }
 
             if (isStaff) {
@@ -260,15 +268,17 @@
             const appCode = 'RC-' + Math.random().toString(36).substr(2, 6).toUpperCase();
             
             try {
-                // Save to DB
-                await supabase.from('applications').insert({
-                    fullName: data.fullName,
-                    age: data.age,
-                    discordId: data.discordId,
-                    type: type,
-                    reason: data.reason,
-                    code: appCode
-                });
+                // Save to DB if available
+                if (_supabase) {
+                    await _supabase.from('applications').insert({
+                        fullName: data.fullName,
+                        age: data.age,
+                        discordId: data.discordId,
+                        type: type,
+                        reason: data.reason,
+                        code: appCode
+                    });
+                }
 
                 await fetch(WEBHOOKS[type], {
                     method: 'POST',
@@ -302,9 +312,17 @@
         }
 
         window.onload = () => {
+            const hidePreloader = () => {
+                const preloader = document.getElementById('preloader');
+                if (preloader) {
+                    preloader.style.opacity = '0';
+                    setTimeout(() => preloader.style.display = 'none', 500);
+                }
+            };
+            
             handleAuth();
-            document.getElementById('preloader').style.opacity = '0';
-            setTimeout(() => document.getElementById('preloader').style.display = 'none', 500);
+            hidePreloader();
+            setTimeout(hidePreloader, 3000); // Fail-safe
             AOS.init({ duration: 800, once: true });
         };
 

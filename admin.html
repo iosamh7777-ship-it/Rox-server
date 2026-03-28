@@ -189,26 +189,41 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         // --- DATABASE CONFIGURATION ---
-        // Replace with your actual Supabase URL and Key
         const SUPABASE_URL = 'https://your-project.supabase.co';
         const SUPABASE_KEY = 'your-anon-key';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        let _supabase;
+        try {
+            if (SUPABASE_URL !== 'https://your-project.supabase.co') {
+                _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+        } catch (e) { console.error("Supabase Init Error:", e); }
 
         const ADMIN_IDS = ['609296092835741696', '579499056536092672', '1026172587119755304', '1029823456386228356'];
         
         // Security Check
         window.addEventListener('load', async () => {
+            const hidePreloader = () => {
+                const preloader = document.getElementById('preloader');
+                if (preloader) {
+                    preloader.style.opacity = '0';
+                    setTimeout(() => preloader.style.display = 'none', 500);
+                }
+            };
+
             const user = JSON.parse(localStorage.getItem('discordUser'));
             
             // Check in Database if Chefs or Admin
             let isAuthorized = false;
-            if (user) {
-                if (ADMIN_IDS.includes(user.id)) isAuthorized = true;
-                else {
-                    const { data: chefs } = await supabase.from('chefs').select('*').eq('id', user.id);
-                    if (chefs && chefs.length > 0) isAuthorized = true;
+            try {
+                if (user) {
+                    if (ADMIN_IDS.includes(user.id)) isAuthorized = true;
+                    else if (_supabase) {
+                        const { data: chefs } = await _supabase.from('chefs').select('*').eq('id', user.id);
+                        if (chefs && chefs.length > 0) isAuthorized = true;
+                    }
                 }
-            }
+            } catch (e) { console.error("Auth DB Check Error:", e); }
 
             if (!isAuthorized) {
                 window.location.href = 'index.html';
@@ -216,8 +231,8 @@
             }
 
             document.getElementById('adminName').innerText = user.global_name || user.username;
-            document.getElementById('preloader').style.opacity = '0';
-            setTimeout(() => document.getElementById('preloader').style.display = 'none', 500);
+            hidePreloader();
+            setTimeout(hidePreloader, 3000); // Fail-safe
 
             initDashboard();
             updateStoreUI();
@@ -225,11 +240,12 @@
         });
 
         async function initDashboard() {
+            if (!_supabase) return;
             try {
-                const { data: apps } = await supabase.from('applications').select('*').order('created_at', { ascending: false });
-                const { data: chefs } = await supabase.from('chefs').select('*');
-                const { data: promos } = await supabase.from('promo_codes').select('*');
-                const { data: sales } = await supabase.from('sales').select('*').order('created_at', { ascending: false });
+                const { data: apps } = await _supabase.from('applications').select('*').order('created_at', { ascending: false });
+                const { data: chefs } = await _supabase.from('chefs').select('*');
+                const { data: promos } = await _supabase.from('promo_codes').select('*');
+                const { data: sales } = await _supabase.from('sales').select('*').order('created_at', { ascending: false });
 
                 document.getElementById('stat-apps').innerText = apps?.length || 0;
                 document.getElementById('stat-chefs').innerText = chefs?.length || 0;
@@ -262,16 +278,18 @@
 
         // Store Logic
         async function toggleStoreStatus() {
-            const { data } = await supabase.from('settings').select('value').eq('key', 'store_open').single();
+            if (!_supabase) return;
+            const { data } = await _supabase.from('settings').select('value').eq('key', 'store_open').single();
             const newStatus = !data?.value;
-            await supabase.from('settings').upsert({ key: 'store_open', value: newStatus });
+            await _supabase.from('settings').upsert({ key: 'store_open', value: newStatus });
             
             addLog(`قام المدير بـ ${newStatus ? 'فتح' : 'إغلاق'} المتجر`, 'store');
             updateStoreUI();
         }
 
         async function updateStoreUI() {
-            const { data } = await supabase.from('settings').select('value').eq('key', 'store_open').single();
+            if (!_supabase) return;
+            const { data } = await _supabase.from('settings').select('value').eq('key', 'store_open').single();
             const isOpen = data?.value !== false;
             
             const btn = document.getElementById('toggleStoreBtn');
@@ -292,12 +310,13 @@
 
         // Coupon Logic
         async function saveCoupon() {
+            if (!_supabase) return;
             const name = document.getElementById('coupon-name').value.toUpperCase().trim();
             const pct = parseInt(document.getElementById('coupon-pct').value);
 
             if (!name || isNaN(pct)) return alert('بيانات غير مكتملة');
 
-            await supabase.from('promo_codes').insert({ code: name, discount: pct });
+            await _supabase.from('promo_codes').insert({ code: name, discount: pct });
             
             addLog(`تم إنشاء كود خصم جديد: ${name} (${pct}%)`, 'coupons');
             document.getElementById('couponModal').classList.remove('flex');
@@ -305,7 +324,8 @@
         }
 
         async function renderCoupons() {
-            const { data: promos } = await supabase.from('promo_codes').select('*');
+            if (!_supabase) return;
+            const { data: promos } = await _supabase.from('promo_codes').select('*');
             const grid = document.getElementById('coupons-grid');
             grid.innerHTML = promos?.map((p) => `
                 <div class="stat-card">
@@ -320,14 +340,16 @@
         }
 
         async function deleteCoupon(code) {
-            await supabase.from('promo_codes').delete().eq('code', code);
+            if (!_supabase) return;
+            await _supabase.from('promo_codes').delete().eq('code', code);
             addLog(`تم حذف كود الخصم: ${code}`, 'coupons');
             renderCoupons();
         }
 
         // Logs Logic
         async function addLog(msg, type) {
-            await supabase.from('logs').insert({ msg, type });
+            if (!_supabase) return;
+            await _supabase.from('logs').insert({ msg, type });
             if (document.getElementById('logs').classList.contains('active')) renderLogs();
         }
 
@@ -344,7 +366,8 @@
         }
 
         async function renderLogs() {
-            const { data: logs } = await supabase.from('logs').select('*').order('created_at', { ascending: false }).limit(100);
+            if (!_supabase) return;
+            const { data: logs } = await _supabase.from('logs').select('*').order('created_at', { ascending: false }).limit(100);
             const list = document.getElementById('logs-list');
             list.innerHTML = logs?.map(l => `
                 <div class="log-item">
