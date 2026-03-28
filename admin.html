@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الإدارة - Realm City</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; background: #050505; color: white; overflow-x: hidden; }
+        .sidebar { background: #0a0a0a; border-left: 1px solid rgba(0, 210, 255, 0.1); transition: 0.3s; }
+        .nav-link { padding: 15px 25px; display: flex; align-items: center; gap: 15px; color: #666; font-weight: 700; transition: 0.3s; border-right: 3px solid transparent; }
+        .nav-link:hover, .nav-link.active { color: #00d2ff; background: rgba(0, 210, 255, 0.05); border-right-color: #00d2ff; }
+        .stat-card { background: #0d0d0d; border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 30px; transition: 0.3s; }
+        .stat-card:hover { border-color: rgba(0, 210, 255, 0.3); transform: translateY(-5px); }
+        .admin-section { display: none; }
+        .admin-section.active { display: block; }
+        .form-input { width: 100%; background: #111; border: 1px solid #222; padding: 12px 18px; border-radius: 14px; color: white; outline: none; transition: 0.3s; }
+        .form-input:focus { border-color: #00d2ff; background: #151515; }
+        .log-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.02); display: flex; align-items: center; gap: 15px; font-size: 14px; }
+        .log-time { color: #444; font-family: monospace; min-width: 150px; }
+        #preloader { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; transition: 0.5s; }
+        .loader { width: 40px; height: 40px; border: 3px solid rgba(0,210,255,0.1); border-top-color: #00d2ff; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #111; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00d2ff; }
+    </style>
+</head>
+<body class="flex min-h-screen">
+
+    <!-- Preloader -->
+    <div id="preloader"><div class="loader"></div></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar w-72 hidden md:block flex-shrink-0">
+        <div class="p-8 mb-10">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-2xl"><i class="fas fa-crown"></i></div>
+                <div>
+                    <h2 class="font-black text-xl leading-none">الإدارة</h2>
+                    <span class="text-gray-500 text-xs font-bold uppercase tracking-widest">Realm City</span>
+                </div>
+            </div>
+        </div>
+
+        <nav class="space-y-2">
+            <a href="#" class="nav-link active" onclick="showSection('dashboard', this)"><i class="fas fa-chart-line"></i> الإحصائيات</a>
+            <a href="#" class="nav-link" onclick="showSection('store', this)"><i class="fas fa-store"></i> المتجر</a>
+            <a href="#" class="nav-link" onclick="showSection('coupons', this)"><i class="fas fa-ticket-alt"></i> الكوبونات</a>
+            <a href="#" class="nav-link" onclick="showSection('logs', this)"><i class="fas fa-history"></i> السجلات</a>
+            <div class="pt-10 px-6">
+                <a href="index.html" class="w-full bg-white/5 text-center py-4 rounded-2xl block hover:bg-white/10 transition-all font-bold text-sm">العودة للموقع</a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-grow p-10 max-h-screen overflow-y-auto">
+        
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="admin-section active" data-aos="fade-up">
+            <header class="mb-12">
+                <h1 class="text-4xl font-black mb-2">مرحباً، <span id="adminName">...</span></h1>
+                <p class="text-gray-500">نظرة عامة على أداء الموقع والعمليات الأخيرة.</p>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                <div class="stat-card">
+                    <i class="fas fa-users text-3xl text-blue-500 mb-6"></i>
+                    <div class="text-3xl font-black mb-1" id="stat-apps">0</div>
+                    <div class="text-gray-500 text-sm font-bold">إجمالي التقديمات</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-shopping-cart text-3xl text-green-500 mb-6"></i>
+                    <div class="text-3xl font-black mb-1" id="stat-orders">0</div>
+                    <div class="text-gray-500 text-sm font-bold">طلبات المتجر</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-ticket-alt text-3xl text-yellow-500 mb-6"></i>
+                    <div class="text-3xl font-black mb-1" id="stat-coupons">0</div>
+                    <div class="text-gray-500 text-sm font-bold">أكواد الخصم</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-user-shield text-3xl text-purple-500 mb-6"></i>
+                    <div class="text-3xl font-black mb-1" id="stat-chefs">0</div>
+                    <div class="text-gray-500 text-sm font-bold">رؤساء الأقسام</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="stat-card h-96 overflow-hidden flex flex-col">
+                    <h3 class="font-black text-xl mb-6 flex justify-between">
+                        آخر التقديمات <i class="fas fa-chevron-left text-xs text-gray-700"></i>
+                    </h3>
+                    <div class="space-y-4 overflow-y-auto flex-grow pr-2" id="recent-apps">
+                        <!-- Content via JS -->
+                    </div>
+                </div>
+                <div class="stat-card h-96 overflow-hidden flex flex-col">
+                    <h3 class="font-black text-xl mb-6 flex justify-between">
+                        آخر المبيعات <i class="fas fa-chevron-left text-xs text-gray-700"></i>
+                    </h3>
+                    <div class="space-y-4 overflow-y-auto flex-grow pr-2" id="recent-sales">
+                        <!-- Content via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Store Management Section -->
+        <section id="store" class="admin-section" data-aos="fade-up">
+            <h1 class="text-4xl font-black mb-8">إدارة المتجر</h1>
+            <div class="stat-card max-w-2xl">
+                <div class="flex items-center justify-between p-6 bg-white/5 rounded-3xl border border-white/5 mb-8">
+                    <div>
+                        <h4 class="font-black text-xl mb-1">حالة المتجر الحالية</h4>
+                        <p id="store-status-text" class="text-green-500 font-bold">المتجر مفتوح الآن ويستقبل الطلبات</p>
+                    </div>
+                    <button id="toggleStoreBtn" onclick="toggleStoreStatus()" class="bg-red-600 px-8 py-3 rounded-2xl font-black hover:bg-red-700 transition-all shadow-xl shadow-red-600/20">إغلاق المتجر</button>
+                </div>
+                <div class="space-y-6">
+                    <h4 class="font-black text-lg">إعدادات سريعة</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="addLog('تم تحديث إعدادات المتجر', 'store')" class="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-blue-500 transition-all text-center">
+                            <i class="fas fa-sync mb-3 text-2xl text-blue-500"></i><br>تحديث البيانات
+                        </button>
+                        <button onclick="addLog('تم تنظيف الكاش للمتجر', 'system')" class="bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-yellow-500 transition-all text-center">
+                            <i class="fas fa-broom mb-3 text-2xl text-yellow-500"></i><br>تنظيف الكاش
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Coupons Section -->
+        <section id="coupons" class="admin-section" data-aos="fade-up">
+            <div class="flex justify-between items-center mb-10">
+                <h1 class="text-4xl font-black">أكواد الخصم</h1>
+                <button onclick="document.getElementById('couponModal').classList.add('flex')" class="bg-blue-600 px-8 py-3 rounded-2xl font-black hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20"><i class="fas fa-plus mr-2"></i> إنشاء كود جديد</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="coupons-grid">
+                <!-- Content via JS -->
+            </div>
+        </section>
+
+        <!-- Logs Section -->
+        <section id="logs" class="admin-section" data-aos="fade-up">
+            <div class="flex justify-between items-center mb-10">
+                <h1 class="text-4xl font-black">سجلات النظام</h1>
+                <button onclick="clearLogs()" class="text-red-500 font-bold hover:underline">مسح كافة السجلات</button>
+            </div>
+            <div class="stat-card p-0 overflow-hidden">
+                <div id="logs-list" class="max-h-[70vh] overflow-y-auto">
+                    <!-- Logs via JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Coupon -->
+    <div id="couponModal" class="fixed inset-0 bg-black/90 z-[20000] hidden items-center justify-center p-6 backdrop-filter blur-md">
+        <div class="bg-[#0d0d0d] border border-blue-500/20 p-10 rounded-[40px] w-full max-w-md" data-aos="zoom-in">
+            <h2 class="text-3xl font-black mb-8 text-center">إنشاء كود خصم</h2>
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2">اسم الكود</label>
+                    <input type="text" id="coupon-name" class="form-input" placeholder="مثلاً: RAMADAN2026">
+                </div>
+                <div>
+                    <label class="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2">نسبة الخصم %</label>
+                    <input type="number" id="coupon-pct" class="form-input" placeholder="25">
+                </div>
+                <div class="flex gap-4 pt-4">
+                    <button onclick="saveCoupon()" class="flex-grow bg-blue-600 py-4 rounded-2xl font-black hover:bg-blue-700 shadow-xl shadow-blue-600/20">حفظ الكود</button>
+                    <button onclick="document.getElementById('couponModal').classList.remove('flex')" class="px-8 bg-white/5 rounded-2xl font-bold">إلغاء</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        const ADMIN_IDS = ['609296092835741696', '579499056536092672', '1026172587119755304', '1029823456386228356'];
+        
+        // Security Check
+        window.addEventListener('load', () => {
+            const user = JSON.parse(localStorage.getItem('discordUser'));
+            const chefs = JSON.parse(localStorage.getItem('serverChefs') || '[]');
+            const isChef = chefs.some(c => c.id === user?.id);
+            
+            if (!user || (!ADMIN_IDS.includes(user.id) && !isChef)) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            document.getElementById('adminName').innerText = user.global_name || user.username;
+            document.getElementById('preloader').style.opacity = '0';
+            setTimeout(() => document.getElementById('preloader').style.display = 'none', 500);
+
+            initDashboard();
+            updateStoreUI();
+            AOS.init({ duration: 800, once: true });
+        });
+
+        function showSection(id, btn) {
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (id === 'coupons') renderCoupons();
+            if (id === 'logs') renderLogs();
+            if (id === 'dashboard') initDashboard();
+        }
+
+        function initDashboard() {
+            const apps = JSON.parse(localStorage.getItem('serverApps') || '[]');
+            const chefs = JSON.parse(localStorage.getItem('serverChefs') || '[]');
+            const promos = JSON.parse(localStorage.getItem('promoCodes') || '[]');
+            const sales = JSON.parse(localStorage.getItem('serverSales') || '[]');
+
+            document.getElementById('stat-apps').innerText = apps.length;
+            document.getElementById('stat-chefs').innerText = chefs.length;
+            document.getElementById('stat-coupons').innerText = promos.length;
+            document.getElementById('stat-orders').innerText = sales.length;
+
+            const appList = document.getElementById('recent-apps');
+            appList.innerHTML = apps.slice(0, 5).map(app => `
+                <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+                    <div class="w-10 h-10 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-500"><i class="fas fa-file-alt"></i></div>
+                    <div>
+                        <div class="font-bold text-sm">${app.fullName}</div>
+                        <div class="text-[10px] text-gray-500 uppercase">${app.type} - ${new Date(app.time).toLocaleDateString()}</div>
+                    </div>
+                </div>
+            `).join('') || '<p class="text-center text-gray-600 py-10">لا يوجد تقديمات حالياً</p>';
+
+            const salesList = document.getElementById('recent-sales');
+            salesList.innerHTML = sales.slice(0, 5).map(sale => `
+                <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+                    <div class="w-10 h-10 bg-green-500/10 rounded-full flex items-center justify-center text-green-500"><i class="fas fa-check"></i></div>
+                    <div>
+                        <div class="font-bold text-sm">${sale.item}</div>
+                        <div class="text-[10px] text-gray-500 uppercase">${sale.user} - ${sale.price}</div>
+                    </div>
+                </div>
+            `).join('') || '<p class="text-center text-gray-600 py-10">لا يوجد مبيعات حالياً</p>';
+        }
+
+        // Store Logic
+        function toggleStoreStatus() {
+            const current = localStorage.getItem('storeOpen') !== 'false';
+            localStorage.setItem('storeOpen', !current);
+            addLog(`قام المدير بـ ${!current ? 'فتح' : 'إغلاق'} المتجر`, 'store');
+            updateStoreUI();
+        }
+
+        function updateStoreUI() {
+            const isOpen = localStorage.getItem('storeOpen') !== 'false';
+            const btn = document.getElementById('toggleStoreBtn');
+            const txt = document.getElementById('store-status-text');
+
+            if (isOpen) {
+                btn.innerText = 'إغلاق المتجر';
+                btn.className = 'bg-red-600 px-8 py-3 rounded-2xl font-black hover:bg-red-700 transition-all';
+                txt.innerText = 'المتجر مفتوح الآن ويستقبل الطلبات';
+                txt.className = 'text-green-500 font-bold';
+            } else {
+                btn.innerText = 'فتح المتجر';
+                btn.className = 'bg-green-600 px-8 py-3 rounded-2xl font-black hover:bg-green-700 transition-all';
+                txt.innerText = 'المتجر مغلق حالياً أمام المستخدمين';
+                txt.className = 'text-red-500 font-bold';
+            }
+        }
+
+        // Coupon Logic
+        function saveCoupon() {
+            const name = document.getElementById('coupon-name').value.toUpperCase().trim();
+            const pct = parseInt(document.getElementById('coupon-pct').value);
+
+            if (!name || isNaN(pct)) return alert('بيانات غير مكتملة');
+
+            let promos = JSON.parse(localStorage.getItem('promoCodes') || '[]');
+            promos.push({ code: name, discount: pct });
+            localStorage.setItem('promoCodes', JSON.stringify(promos));
+            
+            addLog(`تم إنشاء كود خصم جديد: ${name} (${pct}%)`, 'coupons');
+            document.getElementById('couponModal').classList.remove('flex');
+            renderCoupons();
+        }
+
+        function renderCoupons() {
+            const promos = JSON.parse(localStorage.getItem('promoCodes') || '[]');
+            const grid = document.getElementById('coupons-grid');
+            grid.innerHTML = promos.map((p, i) => `
+                <div class="stat-card">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-12 h-12 bg-yellow-500/10 rounded-2xl flex items-center justify-center text-yellow-500 text-xl"><i class="fas fa-ticket-alt"></i></div>
+                        <button onclick="deleteCoupon(${i})" class="text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <h4 class="text-2xl font-black mb-1">${p.code}</h4>
+                    <p class="text-blue-500 font-bold">${p.discount}% خصم</p>
+                </div>
+            `).join('');
+        }
+
+        function deleteCoupon(i) {
+            let promos = JSON.parse(localStorage.getItem('promoCodes') || '[]');
+            const code = promos[i].code;
+            promos.splice(i, 1);
+            localStorage.setItem('promoCodes', JSON.stringify(promos));
+            addLog(`تم حذف كود الخصم: ${code}`, 'coupons');
+            renderCoupons();
+        }
+
+        // Logs Logic
+        function addLog(msg, type) {
+            let logs = JSON.parse(localStorage.getItem('adminLogs') || '[]');
+            logs.unshift({ msg, type, time: new Date().toISOString() });
+            localStorage.setItem('adminLogs', JSON.stringify(logs.slice(0, 100)));
+            if (document.getElementById('logs').classList.contains('active')) renderLogs();
+        }
+
+        function renderLogs() {
+            const logs = JSON.parse(localStorage.getItem('adminLogs') || '[]');
+            const list = document.getElementById('logs-list');
+            list.innerHTML = logs.map(l => `
+                <div class="log-item">
+                    <div class="log-time">${new Date(l.time).toLocaleString('ar-EG')}</div>
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs ${getLogClass(l.type)}">
+                        <i class="${getLogIcon(l.type)}"></i>
+                    </div>
+                    <div class="font-bold">${l.msg}</div>
+                </div>
+            `).join('') || '<div class="p-20 text-center text-gray-700">لا توجد سجلات حالياً</div>';
+        }
+
+        function getLogIcon(type) {
+            if (type === 'store') return 'fas fa-store';
+            if (type === 'coupons') return 'fas fa-ticket-alt';
+            if (type === 'system') return 'fas fa-cog';
+            return 'fas fa-info-circle';
+        }
+
+        function getLogClass(type) {
+            if (type === 'store') return 'bg-green-500/10 text-green-500';
+            if (type === 'coupons') return 'bg-yellow-500/10 text-yellow-500';
+            if (type === 'system') return 'bg-blue-500/10 text-blue-500';
+            return 'bg-gray-500/10 text-gray-500';
+        }
+
+        function clearLogs() {
+            if (confirm('هل أنت متأكد من مسح جميع السجلات؟')) {
+                localStorage.removeItem('adminLogs');
+                renderLogs();
+            }
+        }
+    </script>
+</body>
+</html>

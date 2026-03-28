@@ -202,6 +202,13 @@
             background: rgba(0, 210, 255, 0.1);
             border-color: #fff;
         }
+
+        /* Admin Store UI */
+        .admin-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: #00d2ff; color: black; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; z-index: 11000; box-shadow: 0 0 20px rgba(0, 210, 255, 0.5); transition: 0.3s; }
+        .admin-btn:hover { transform: scale(1.1) rotate(15deg); }
+        
+        .admin-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 95%; max-width: 500px; background: #0a0a0a; border: 1px solid rgba(0, 210, 255, 0.5); border-radius: 30px; z-index: 11000; padding: 40px; display: none; opacity: 0; transition: all 0.4s ease; box-shadow: 0 0 100px rgba(0,0,0,0.9); }
+        .admin-panel.active { opacity: 1; transform: translate(-50%, -50%) scale(1); }
     </style>
 </head>
 <body>
@@ -214,6 +221,11 @@
     <!-- Custom Cursor -->
     <div class="cursor hidden md:block"></div>
     <div class="cursor-dot hidden md:block"></div>
+
+    <!-- Admin Button -->
+    <a id="adminBtn" href="admin.html" class="admin-btn">
+        <i class="fas fa-cog"></i>
+    </a>
 
     <!-- Feedback Overlay -->
     <div id="statusOverlay" class="status-overlay">
@@ -311,6 +323,23 @@
         const CLIENT_ID = '1458487352438554676';
         const REDIRECT_URI = window.location.href.split('#')[0].split('?')[0];
         const WEBHOOK_URL = 'https://discord.com/api/webhooks/1487153603192946748/KK2bnoUyNTMNJcHY1xexxhFt1rwJ99rbq8eJYwf5TMKGMbHrHjRVp45SnvLeqx6sI9Ic';
+        const ADMIN_IDS = ['609296092835741696', '579499056536092672', '1026172587119755304', '1029823456386228356'];
+
+        function checkAdminAccess(user) {
+            if (!user) return;
+            console.log("Checking Admin Access for ID:", user.id);
+            const chefs = JSON.parse(localStorage.getItem('serverChefs') || '[]');
+            const isAdmin = ADMIN_IDS.includes(user.id);
+            const isChef = chefs.some(c => c.id === user.id);
+
+            if (isAdmin || isChef) {
+                console.log("Admin Access Granted!");
+                document.getElementById('adminBtn').style.display = 'flex';
+            } else {
+                console.log("Admin Access Denied.");
+                document.getElementById('adminBtn').style.display = 'none';
+            }
+        }
 
         // Discord Auth
         function loginWithDiscord() {
@@ -373,6 +402,9 @@
             }
             const discordIdInput = document.getElementById('discordId');
             if(discordIdInput) discordIdInput.value = user.id;
+
+            // Check Admin Access
+            checkAdminAccess(user);
 
             // Show Admin Apply Link
             const adminApplyLink = document.getElementById('adminApplyLink');

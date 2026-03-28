@@ -284,6 +284,17 @@
                 });
 
                 if (response.ok) {
+                    // Log Sale for Admin
+                    let sales = JSON.parse(localStorage.getItem('serverSales') || '[]');
+                    const user = JSON.parse(localStorage.getItem('discordUser') || '{"username": "Unknown"}');
+                    sales.unshift({
+                        item: itemData.name,
+                        price: document.getElementById('finalPrice').innerText,
+                        user: user.global_name || user.username,
+                        time: new Date().toISOString()
+                    });
+                    localStorage.setItem('serverSales', JSON.stringify(sales));
+
                     document.getElementById('statusIcon').innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
                     document.getElementById('statusTitle').innerText = 'تمت العملية بنجاح!';
                     document.getElementById('statusText').innerText = 'تم ربط طلبك بالسيرفر تلقائياً.';
