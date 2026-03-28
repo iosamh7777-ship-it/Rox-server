@@ -167,29 +167,33 @@
 
         /* Custom Cursor */
         .cursor { 
-            width: 20px; 
-            height: 20px; 
+            position: fixed;
+            width: 25px;
+            height: 25px;
             border: 2px solid #10b981; 
             border-radius: 50%; 
-            position: fixed; 
             pointer-events: none; 
             z-index: 9999; 
-            top: 0;
-            left: 0;
-            transition: transform 0.08s ease-out; 
-            will-change: transform;
+            transition: transform 0.1s ease-out, border-color 0.3s, background 0.3s;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
         }
         .cursor-dot { 
-            width: 4px; 
-            height: 4px; 
+            position: fixed;
+            width: 6px; 
+            height: 6px; 
             background: #10b981; 
             border-radius: 50%; 
-            position: fixed; 
             pointer-events: none; 
-            z-index: 9999; 
-            top: 0;
-            left: 0;
-            will-change: transform;
+            z-index: 10000; 
+            transform: translate(-50%, -50%);
+            transition: transform 0.05s ease-out;
+            box-shadow: 0 0 10px #10b981;
+        }
+        .cursor-hover {
+            transform: translate(-50%, -50%) scale(1.5);
+            background: rgba(16, 185, 129, 0.1);
+            border-color: #fff;
         }
     </style>
 </head>
@@ -216,6 +220,7 @@
                 <i class="fas fa-arrow-right ml-2 group-hover:-translate-x-1 transition-transform"></i> العودة للرئيسية
             </a>
             <a id="adminApplyLink" href="admin-apply.html" class="nav-item" style="display: none;">تقديم رقابة</a>
+            <a id="storeLink" href="store.html" class="nav-item" style="display: none;">المتجر</a>
         </div>
         
         <div class="flex items-center gap-6">
@@ -361,6 +366,10 @@
             // Show Admin Apply Link
             const adminApplyLink = document.getElementById('adminApplyLink');
             if (adminApplyLink) adminApplyLink.style.display = 'block';
+
+            // Show Store Link
+            const storeLink = document.getElementById('storeLink');
+            if (storeLink) storeLink.style.display = 'block';
         }
 
         function logout() {
@@ -372,14 +381,15 @@
         const cursor = document.querySelector('.cursor');
         const cursorDot = document.querySelector('.cursor-dot');
         let mouseX = 0, mouseY = 0;
-        let isHovering = false;
 
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
             requestAnimationFrame(() => {
-                cursor.style.transform = `translate3d(${mouseX - 10}px, ${mouseY - 10}px, 0) scale(${isHovering ? 2.5 : 1})`;
-                cursorDot.style.transform = `translate3d(${mouseX - 2}px, ${mouseY - 2}px, 0)`;
+                cursor.style.left = `${mouseX}px`;
+                cursor.style.top = `${mouseY}px`;
+                cursorDot.style.left = `${mouseX}px`;
+                cursorDot.style.top = `${mouseY}px`;
             });
         });
 

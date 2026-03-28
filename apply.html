@@ -216,6 +216,7 @@
                 <i class="fas fa-arrow-right ml-2 group-hover:-translate-x-1 transition-transform"></i> العودة للرئيسية
             </a>
             <a id="adminApplyLink" href="admin-apply.html" class="nav-item" style="display: none;">تقديم رقابة</a>
+            <a id="storeLink" href="store.html" class="nav-item" style="display: none;">المتجر</a>
         </div>
         
         <div class="flex items-center gap-6">
@@ -336,6 +337,10 @@
             // Show Admin Apply Link
             const adminApplyLink = document.getElementById('adminApplyLink');
             if (adminApplyLink) adminApplyLink.style.display = 'block';
+
+            // Show Store Link
+            const storeLink = document.getElementById('storeLink');
+            if (storeLink) storeLink.style.display = 'block';
         }
 
         function logout() {
