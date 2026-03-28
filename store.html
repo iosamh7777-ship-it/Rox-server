@@ -80,8 +80,15 @@
         .admin-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 95%; max-width: 500px; background: #0a0a0a; border: 1px solid rgba(0, 210, 255, 0.5); border-radius: 30px; z-index: 11000; padding: 40px; display: none; opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 100px rgba(0,0,0,0.9), 0 0 30px rgba(0, 210, 255, 0.1); }
         .admin-panel.active { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1); }
         
-        .store-closed-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .store-closed-overlay.active { display: flex; }
+        /* Red Screen for Closed Store */
+        .store-closed-red { position: fixed; inset: 0; background: linear-gradient(135deg, #450a0a 0%, #000 100%); z-index: 12000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); border: 5px solid #ef4444; }
+        .store-closed-red.active { display: flex; animation: redPulse 2s infinite; }
+        @keyframes redPulse { 
+            0% { box-shadow: inset 0 0 100px #991b1b; } 
+            50% { box-shadow: inset 0 0 200px #ef4444; } 
+            100% { box-shadow: inset 0 0 100px #991b1b; } 
+        }
+        .red-alert-box { background: rgba(0,0,0,0.8); padding: 50px 80px; border-radius: 40px; border: 2px solid #ef4444; text-align: center; box-shadow: 0 0 50px rgba(239, 68, 68, 0.4); }
     </style>
 </head>
 <body class="antialiased">
@@ -139,6 +146,16 @@
     <a id="adminBtn" href="admin.html" class="admin-btn">
         <i class="fas fa-cog"></i>
     </a>
+
+    <!-- Store Closed RED SCREEN -->
+    <div id="storeClosedOverlay" class="store-closed-red">
+        <div class="red-alert-box" data-aos="zoom-in">
+            <i class="fas fa-store-slash text-9xl text-red-500 mb-10 animate-bounce"></i>
+            <h2 class="text-7xl font-black mb-6 text-white uppercase tracking-tighter">المتجر مقفل حالياً</h2>
+            <p class="text-red-400 text-2xl font-bold mb-10">نحن نقوم ببعض التحديثات الهامة، سنعود قريباً!</p>
+            <button onclick="location.href='index.html'" class="bg-red-600 text-white px-12 py-5 rounded-2xl font-black text-xl hover:bg-red-700 transition-all shadow-2xl shadow-red-600/40">العودة للرئيسية</button>
+        </div>
+    </div>
 
     <!-- Navigation Bar -->
     <nav class="navbar-top">
@@ -347,38 +364,67 @@
 
     <!-- AOS JS -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // --- DATABASE CONFIGURATION ---
+        const SUPABASE_URL = 'https://your-project.supabase.co';
+        const SUPABASE_KEY = 'your-anon-key';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         const CLIENT_ID = '1486841317316231310';
         const REDIRECT_URI = window.location.href.split('#')[0].split('?')[0];
         const CFW_WEBHOOK = 'https://discord.com/api/webhooks/1487153603192946748/KK2bnoUyNTMNJcHY1xexxhFt1rwJ99rbq8eJYwf5TMKGMbHrHjRVp45SnvLeqx6sI9Ic';
         const ADMIN_IDS = ['609296092835741696', '579499056536092672', '1026172587119755304', '1029823456386228356'];
 
-        // Admin Panel Logic
+        // Admin Panel Logic (Now points to admin.html)
         const ADMIN_IDS = ['609296092835741696', '579499056536092672', '1026172587119755304', '1029823456386228356'];
 
-        function updateStoreUI() {
-            const isOpen = localStorage.getItem('storeOpen') !== 'false';
-            if (!isOpen) {
-                // If store is closed and not admin, we could redirect or show a message
-                // For now, admins check is done in checkAdminAccess
-            }
+        async function updateStoreUI() {
+            try {
+                const { data } = await supabase.from('settings').select('value').eq('key', 'store_open').single();
+                const isOpen = data?.value !== false;
+                const overlay = document.getElementById('storeClosedOverlay');
+                
+                if (isOpen) {
+                    overlay.classList.remove('active');
+                } else {
+                    // Check if current user is admin/chef - they can bypass the red screen
+                    const user = JSON.parse(localStorage.getItem('discordUser'));
+                    let isStaff = false;
+                    if (user) {
+                        if (ADMIN_IDS.includes(user.id)) isStaff = true;
+                        else {
+                            const { data: chefs } = await supabase.from('chefs').select('*').eq('id', user.id);
+                            if (chefs && chefs.length > 0) isStaff = true;
+                        }
+                    }
+
+                    if (!isStaff) {
+                        overlay.classList.add('active');
+                    } else {
+                        overlay.classList.remove('active');
+                        console.log("Staff bypass enabled for closed store.");
+                    }
+                }
+            } catch (e) { console.error("Store Status Error:", e); }
         }
 
-        function checkAdminAccess(user) {
+        async function checkAdminAccess(user) {
             if (!user) return;
             
-            console.log("Checking Admin Access for ID:", user.id);
-            const chefs = JSON.parse(localStorage.getItem('serverChefs') || '[]');
-            const isAdmin = ADMIN_IDS.includes(user.id);
-            const isChef = chefs.some(c => c.id === user.id);
+            try {
+                const { data: chefs } = await supabase.from('chefs').select('*').eq('id', user.id);
+                const isAdmin = ADMIN_IDS.includes(user.id);
+                const isChef = chefs && chefs.length > 0;
 
-            if (isAdmin || isChef) {
-                console.log("Admin Access Granted!");
-                document.getElementById('adminBtn').style.display = 'flex';
-            } else {
-                console.log("Admin Access Denied.");
-                document.getElementById('adminBtn').style.display = 'none';
-            }
+                if (isAdmin || isChef) {
+                    document.getElementById('adminBtn').style.display = 'flex';
+                    document.getElementById('storeClosedOverlay').classList.remove('active');
+                } else {
+                    document.getElementById('adminBtn').style.display = 'none';
+                    updateStoreUI(); 
+                }
+            } catch (e) { console.error("Admin Check Error:", e); }
         }
 
         function loginWithDiscord() {

@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Cairo', sans-serif; background: #050505; color: white; overflow-x: hidden; }
         .sidebar { background: #0a0a0a; border-left: 1px solid rgba(0, 210, 255, 0.1); transition: 0.3s; }
@@ -186,15 +188,29 @@
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
+        // --- DATABASE CONFIGURATION ---
+        // Replace with your actual Supabase URL and Key
+        const SUPABASE_URL = 'https://your-project.supabase.co';
+        const SUPABASE_KEY = 'your-anon-key';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         const ADMIN_IDS = ['609296092835741696', '579499056536092672', '1026172587119755304', '1029823456386228356'];
         
         // Security Check
-        window.addEventListener('load', () => {
+        window.addEventListener('load', async () => {
             const user = JSON.parse(localStorage.getItem('discordUser'));
-            const chefs = JSON.parse(localStorage.getItem('serverChefs') || '[]');
-            const isChef = chefs.some(c => c.id === user?.id);
             
-            if (!user || (!ADMIN_IDS.includes(user.id) && !isChef)) {
+            // Check in Database if Chefs or Admin
+            let isAuthorized = false;
+            if (user) {
+                if (ADMIN_IDS.includes(user.id)) isAuthorized = true;
+                else {
+                    const { data: chefs } = await supabase.from('chefs').select('*').eq('id', user.id);
+                    if (chefs && chefs.length > 0) isAuthorized = true;
+                }
+            }
+
+            if (!isAuthorized) {
                 window.location.href = 'index.html';
                 return;
             }
@@ -208,62 +224,56 @@
             AOS.init({ duration: 800, once: true });
         });
 
-        function showSection(id, btn) {
-            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            btn.classList.add('active');
+        async function initDashboard() {
+            try {
+                const { data: apps } = await supabase.from('applications').select('*').order('created_at', { ascending: false });
+                const { data: chefs } = await supabase.from('chefs').select('*');
+                const { data: promos } = await supabase.from('promo_codes').select('*');
+                const { data: sales } = await supabase.from('sales').select('*').order('created_at', { ascending: false });
 
-            if (id === 'coupons') renderCoupons();
-            if (id === 'logs') renderLogs();
-            if (id === 'dashboard') initDashboard();
-        }
+                document.getElementById('stat-apps').innerText = apps?.length || 0;
+                document.getElementById('stat-chefs').innerText = chefs?.length || 0;
+                document.getElementById('stat-coupons').innerText = promos?.length || 0;
+                document.getElementById('stat-orders').innerText = sales?.length || 0;
 
-        function initDashboard() {
-            const apps = JSON.parse(localStorage.getItem('serverApps') || '[]');
-            const chefs = JSON.parse(localStorage.getItem('serverChefs') || '[]');
-            const promos = JSON.parse(localStorage.getItem('promoCodes') || '[]');
-            const sales = JSON.parse(localStorage.getItem('serverSales') || '[]');
-
-            document.getElementById('stat-apps').innerText = apps.length;
-            document.getElementById('stat-chefs').innerText = chefs.length;
-            document.getElementById('stat-coupons').innerText = promos.length;
-            document.getElementById('stat-orders').innerText = sales.length;
-
-            const appList = document.getElementById('recent-apps');
-            appList.innerHTML = apps.slice(0, 5).map(app => `
-                <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-                    <div class="w-10 h-10 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-500"><i class="fas fa-file-alt"></i></div>
-                    <div>
-                        <div class="font-bold text-sm">${app.fullName}</div>
-                        <div class="text-[10px] text-gray-500 uppercase">${app.type} - ${new Date(app.time).toLocaleDateString()}</div>
+                const appList = document.getElementById('recent-apps');
+                appList.innerHTML = apps?.slice(0, 5).map(app => `
+                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <div class="w-10 h-10 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-500"><i class="fas fa-file-alt"></i></div>
+                        <div>
+                            <div class="font-bold text-sm">${app.fullName}</div>
+                            <div class="text-[10px] text-gray-500 uppercase">${app.type} - ${new Date(app.created_at).toLocaleDateString()}</div>
+                        </div>
                     </div>
-                </div>
-            `).join('') || '<p class="text-center text-gray-600 py-10">لا يوجد تقديمات حالياً</p>';
+                `).join('') || '<p class="text-center text-gray-600 py-10">لا يوجد تقديمات حالياً</p>';
 
-            const salesList = document.getElementById('recent-sales');
-            salesList.innerHTML = sales.slice(0, 5).map(sale => `
-                <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-                    <div class="w-10 h-10 bg-green-500/10 rounded-full flex items-center justify-center text-green-500"><i class="fas fa-check"></i></div>
-                    <div>
-                        <div class="font-bold text-sm">${sale.item}</div>
-                        <div class="text-[10px] text-gray-500 uppercase">${sale.user} - ${sale.price}</div>
+                const salesList = document.getElementById('recent-sales');
+                salesList.innerHTML = sales?.slice(0, 5).map(sale => `
+                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <div class="w-10 h-10 bg-green-500/10 rounded-full flex items-center justify-center text-green-500"><i class="fas fa-check"></i></div>
+                        <div>
+                            <div class="font-bold text-sm">${sale.item}</div>
+                            <div class="text-[10px] text-gray-500 uppercase">${sale.user} - ${sale.price}</div>
+                        </div>
                     </div>
-                </div>
-            `).join('') || '<p class="text-center text-gray-600 py-10">لا يوجد مبيعات حالياً</p>';
+                `).join('') || '<p class="text-center text-gray-600 py-10">لا يوجد مبيعات حالياً</p>';
+            } catch (e) { console.error("DB Load Error:", e); }
         }
 
         // Store Logic
-        function toggleStoreStatus() {
-            const current = localStorage.getItem('storeOpen') !== 'false';
-            localStorage.setItem('storeOpen', !current);
-            addLog(`قام المدير بـ ${!current ? 'فتح' : 'إغلاق'} المتجر`, 'store');
+        async function toggleStoreStatus() {
+            const { data } = await supabase.from('settings').select('value').eq('key', 'store_open').single();
+            const newStatus = !data?.value;
+            await supabase.from('settings').upsert({ key: 'store_open', value: newStatus });
+            
+            addLog(`قام المدير بـ ${newStatus ? 'فتح' : 'إغلاق'} المتجر`, 'store');
             updateStoreUI();
         }
 
-        function updateStoreUI() {
-            const isOpen = localStorage.getItem('storeOpen') !== 'false';
+        async function updateStoreUI() {
+            const { data } = await supabase.from('settings').select('value').eq('key', 'store_open').single();
+            const isOpen = data?.value !== false;
+            
             const btn = document.getElementById('toggleStoreBtn');
             const txt = document.getElementById('store-status-text');
 
@@ -281,59 +291,64 @@
         }
 
         // Coupon Logic
-        function saveCoupon() {
+        async function saveCoupon() {
             const name = document.getElementById('coupon-name').value.toUpperCase().trim();
             const pct = parseInt(document.getElementById('coupon-pct').value);
 
             if (!name || isNaN(pct)) return alert('بيانات غير مكتملة');
 
-            let promos = JSON.parse(localStorage.getItem('promoCodes') || '[]');
-            promos.push({ code: name, discount: pct });
-            localStorage.setItem('promoCodes', JSON.stringify(promos));
+            await supabase.from('promo_codes').insert({ code: name, discount: pct });
             
             addLog(`تم إنشاء كود خصم جديد: ${name} (${pct}%)`, 'coupons');
             document.getElementById('couponModal').classList.remove('flex');
             renderCoupons();
         }
 
-        function renderCoupons() {
-            const promos = JSON.parse(localStorage.getItem('promoCodes') || '[]');
+        async function renderCoupons() {
+            const { data: promos } = await supabase.from('promo_codes').select('*');
             const grid = document.getElementById('coupons-grid');
-            grid.innerHTML = promos.map((p, i) => `
+            grid.innerHTML = promos?.map((p) => `
                 <div class="stat-card">
                     <div class="flex justify-between items-start mb-6">
                         <div class="w-12 h-12 bg-yellow-500/10 rounded-2xl flex items-center justify-center text-yellow-500 text-xl"><i class="fas fa-ticket-alt"></i></div>
-                        <button onclick="deleteCoupon(${i})" class="text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
+                        <button onclick="deleteCoupon('${p.code}')" class="text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
                     </div>
                     <h4 class="text-2xl font-black mb-1">${p.code}</h4>
                     <p class="text-blue-500 font-bold">${p.discount}% خصم</p>
                 </div>
-            `).join('');
+            `).join('') || '';
         }
 
-        function deleteCoupon(i) {
-            let promos = JSON.parse(localStorage.getItem('promoCodes') || '[]');
-            const code = promos[i].code;
-            promos.splice(i, 1);
-            localStorage.setItem('promoCodes', JSON.stringify(promos));
+        async function deleteCoupon(code) {
+            await supabase.from('promo_codes').delete().eq('code', code);
             addLog(`تم حذف كود الخصم: ${code}`, 'coupons');
             renderCoupons();
         }
 
         // Logs Logic
-        function addLog(msg, type) {
-            let logs = JSON.parse(localStorage.getItem('adminLogs') || '[]');
-            logs.unshift({ msg, type, time: new Date().toISOString() });
-            localStorage.setItem('adminLogs', JSON.stringify(logs.slice(0, 100)));
+        async function addLog(msg, type) {
+            await supabase.from('logs').insert({ msg, type });
             if (document.getElementById('logs').classList.contains('active')) renderLogs();
         }
 
-        function renderLogs() {
-            const logs = JSON.parse(localStorage.getItem('adminLogs') || '[]');
+        function showSection(id, btn) {
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (id === 'coupons') renderCoupons();
+            if (id === 'logs') renderLogs();
+            if (id === 'dashboard') initDashboard();
+        }
+
+        async function renderLogs() {
+            const { data: logs } = await supabase.from('logs').select('*').order('created_at', { ascending: false }).limit(100);
             const list = document.getElementById('logs-list');
-            list.innerHTML = logs.map(l => `
+            list.innerHTML = logs?.map(l => `
                 <div class="log-item">
-                    <div class="log-time">${new Date(l.time).toLocaleString('ar-EG')}</div>
+                    <div class="log-time">${new Date(l.created_at).toLocaleString('ar-EG')}</div>
                     <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs ${getLogClass(l.type)}">
                         <i class="${getLogIcon(l.type)}"></i>
                     </div>

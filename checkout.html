@@ -129,7 +129,13 @@
     </main>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // --- DATABASE CONFIGURATION ---
+        const SUPABASE_URL = 'https://your-project.supabase.co';
+        const SUPABASE_KEY = 'your-anon-key';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         const CFW_WEBHOOK = 'https://discord.com/api/webhooks/1487153603192946748/KK2bnoUyNTMNJcHY1xexxhFt1rwJ99rbq8eJYwf5TMKGMbHrHjRVp45SnvLeqx6sI9Ic';
         let discountApplied = 0;
         let itemData = {};
@@ -224,12 +230,11 @@
             }
         }
 
-        function applyDiscount() {
+        async function applyDiscount() {
             const codeInput = document.getElementById('discountCode').value.toUpperCase().trim();
-            const promos = JSON.parse(localStorage.getItem('promoCodes') || '[]');
             
-            // Check dynamic codes from admin
-            const foundPromo = promos.find(p => p.code === codeInput);
+            // Check dynamic codes from DB
+            const { data: foundPromo } = await supabase.from('promo_codes').select('*').eq('code', codeInput).single();
             
             if (codeInput === 'REALM2026' || codeInput === 'CFW') {
                 discountApplied = 0.20;
@@ -284,16 +289,13 @@
                 });
 
                 if (response.ok) {
-                    // Log Sale for Admin
-                    let sales = JSON.parse(localStorage.getItem('serverSales') || '[]');
+                    // Log Sale for Admin in DB
                     const user = JSON.parse(localStorage.getItem('discordUser') || '{"username": "Unknown"}');
-                    sales.unshift({
+                    await supabase.from('sales').insert({
                         item: itemData.name,
                         price: document.getElementById('finalPrice').innerText,
-                        user: user.global_name || user.username,
-                        time: new Date().toISOString()
+                        user: user.global_name || user.username
                     });
-                    localStorage.setItem('serverSales', JSON.stringify(sales));
 
                     document.getElementById('statusIcon').innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
                     document.getElementById('statusTitle').innerText = 'تمت العملية بنجاح!';
