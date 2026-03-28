@@ -129,18 +129,10 @@
     </main>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // --- DATABASE CONFIGURATION ---
-        const SUPABASE_URL = 'https://your-project.supabase.co';
-        const SUPABASE_KEY = 'your-anon-key';
-        
-        let _supabase;
-        try {
-            if (SUPABASE_URL !== 'https://your-project.supabase.co') {
-                _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            }
-        } catch (e) { console.error("Supabase Init Error:", e); }
+        // --- STORAGE HELPERS (REPLACING SUPABASE) ---
+        const getTable = (name) => JSON.parse(localStorage.getItem(`realm_${name}`) || '[]');
+        const setTable = (name, data) => localStorage.setItem(`realm_${name}`, JSON.stringify(data));
 
         const CFW_WEBHOOK = 'https://discord.com/api/webhooks/1487153603192946748/KK2bnoUyNTMNJcHY1xexxhFt1rwJ99rbq8eJYwf5TMKGMbHrHjRVp45SnvLeqx6sI9Ic';
         let discountApplied = 0;
@@ -248,14 +240,9 @@
         async function applyDiscount() {
             const codeInput = document.getElementById('discountCode').value.toUpperCase().trim();
             
-            // Check dynamic codes from DB
-            let foundPromo = null;
-            if (_supabase) {
-                try {
-                    const { data } = await _supabase.from('promo_codes').select('*').eq('code', codeInput).single();
-                    foundPromo = data;
-                } catch (e) { console.error("Promo Check Error:", e); }
-            }
+            // Check dynamic codes from LocalStorage
+            const coupons = getTable('coupons');
+            const foundPromo = coupons.find(c => c.code === codeInput);
             
             if (codeInput === 'REALM2026' || codeInput === 'CFW') {
                 discountApplied = 0.20;
@@ -310,17 +297,27 @@
                 });
 
                 if (response.ok) {
-                    // Log Sale for Admin in DB
-                    if (_supabase) {
-                        try {
-                            const user = JSON.parse(localStorage.getItem('discordUser') || '{"username": "Unknown"}');
-                            await _supabase.from('sales').insert({
-                                item: itemData.name,
-                                price: document.getElementById('finalPrice').innerText,
-                                user: user.global_name || user.username
-                            });
-                        } catch (e) { console.error("Sales Log Error:", e); }
-                    }
+                    // Log Sale in LocalStorage
+                    try {
+                        const user = JSON.parse(localStorage.getItem('discordUser') || '{"username": "Unknown"}');
+                        const sales = getTable('sales');
+                        sales.push({
+                            item: itemData.name,
+                            price: document.getElementById('finalPrice').innerText,
+                            user: user.global_name || user.username,
+                            created_at: new Date().toISOString()
+                        });
+                        setTable('sales', sales);
+
+                        // Also add to logs
+                        const logs = getTable('logs');
+                        logs.push({
+                            msg: `عملية شراء: ${itemData.name} بواسطة ${user.username}`,
+                            type: 'store',
+                            created_at: new Date().toISOString()
+                        });
+                        setTable('logs', logs);
+                    } catch (e) { console.error("Sales Log Error:", e); }
 
                     document.getElementById('statusIcon').innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
                     document.getElementById('statusTitle').innerText = 'تمت العملية بنجاح!';

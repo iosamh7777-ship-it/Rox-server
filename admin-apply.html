@@ -318,22 +318,16 @@
 
     <!-- AOS JS -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // --- STORAGE HELPERS (REPLACING SUPABASE) ---
+        const getTable = (name) => JSON.parse(localStorage.getItem(`realm_${name}`) || '[]');
+        const setTable = (name, data) => localStorage.setItem(`realm_${name}`, JSON.stringify(data));
+
         // Configuration
-        const SUPABASE_URL = 'https://your-project.supabase.co';
-        const SUPABASE_KEY = 'your-anon-key';
         const CLIENT_ID = '1458487352438554676';
         const REDIRECT_URI = window.location.href.split('#')[0].split('?')[0];
         const WEBHOOK_URL = 'https://discord.com/api/webhooks/1487153603192946748/KK2bnoUyNTMNJcHY1xexxhFt1rwJ99rbq8eJYwf5TMKGMbHrHjRVp45SnvLeqx6sI9Ic';
         const ADMIN_IDS = ['609296092835741696', '579499056536092672', '1026172587119755304', '1029823456386228356'];
-
-        let _supabase;
-        try {
-            if (SUPABASE_URL && SUPABASE_URL !== 'https://your-project.supabase.co') {
-                _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            }
-        } catch (e) { console.error("Supabase Init Error:", e); }
 
         async function checkAdminAccess(user) {
             if (!user) return;
@@ -341,11 +335,9 @@
             
             let isStaff = false;
             if (ADMIN_IDS.includes(user.id)) isStaff = true;
-            else if (_supabase) {
-                try {
-                    const { data: chefs } = await _supabase.from('chefs').select('*').eq('id', user.id);
-                    if (chefs && chefs.length > 0) isStaff = true;
-                } catch (e) { console.error("Chef Check Error:", e); }
+            else {
+                const chefs = getTable('chefs');
+                if (chefs.some(c => c.id === user.id)) isStaff = true;
             }
 
             if (isStaff) {
@@ -509,18 +501,18 @@
             };
 
             try {
-                // Save to DB
-                if (_supabase) {
-                    const { error } = await _supabase.from('applications').insert({
-                        fullName: data.fullName,
-                        age: data.age,
-                        discordId: data.discordId,
-                        type: 'admin', // Staff Application
-                        reason: `الخبرة: ${data.experience}\nالساعات: ${data.hours}\nالسبب: ${data.reason}`,
-                        code: appCode
-                    });
-                    if (error) throw error;
-                }
+                // Save to LocalStorage
+                const apps = getTable('apps');
+                apps.push({
+                    fullName: data.fullName,
+                    age: data.age,
+                    discordId: data.discordId,
+                    type: 'admin', // Staff Application
+                    reason: `الخبرة: ${data.experience}\nالساعات: ${data.hours}\nالسبب: ${data.reason}`,
+                    code: appCode,
+                    created_at: new Date().toISOString()
+                });
+                setTable('apps', apps);
 
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',

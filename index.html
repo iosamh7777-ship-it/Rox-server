@@ -190,18 +190,12 @@
     <div class="cursor-dot hidden md:block"></div>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // --- DATABASE CONFIGURATION ---
-        const SUPABASE_URL = 'https://your-project.supabase.co';
-        const SUPABASE_KEY = 'your-anon-key';
-        
-        let _supabase;
-        try {
-            if (SUPABASE_URL !== 'https://your-project.supabase.co') {
-                _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            }
-        } catch (e) { console.error("Supabase Init Error:", e); }
+        // --- STORAGE HELPERS (REPLACING SUPABASE) ---
+        const getSetting = (key, defaultVal) => {
+            const settings = JSON.parse(localStorage.getItem('realm_settings') || '{}');
+            return settings[key] !== undefined ? settings[key] : defaultVal;
+        };
 
         const CLIENT_ID = '1486841317316231310';
         const REDIRECT_URI = window.location.href.split('#')[0].split('?')[0];
@@ -239,26 +233,12 @@
             document.getElementById('discordId').value = user.id;
             document.getElementById('adminApplyLink').style.display = 'block';
             
-            // Check Recruitment Status from DB
-            if (_supabase) {
-                try {
-                    const { data: settings } = await _supabase.from('settings').select('*');
-                    const policeOpen = settings?.find(s => s.key === 'recruitment_police')?.value !== false;
-                    const emsOpen = settings?.find(s => s.key === 'recruitment_ems')?.value !== false;
-                    
-                    // Update form/UI based on recruitment status if needed
-                    // (e.g., disable submit button if closed)
-                } catch (e) { console.error("Settings Load Error:", e); }
-            }
-
-            // Check in Database if Chefs or Admin
+            // Check Staff Access (LocalStorage Chefs)
             let isStaff = false;
             if (ADMIN_IDS.includes(user.id)) isStaff = true;
-            else if (_supabase) {
-                try {
-                    const { data: chefs } = await _supabase.from('chefs').select('*').eq('id', user.id);
-                    if (chefs && chefs.length > 0) isStaff = true;
-                } catch (e) { console.error("Chef Check Error:", e); }
+            else {
+                const chefs = JSON.parse(localStorage.getItem('realm_chefs') || '[]');
+                if (chefs.some(c => c.id === user.id)) isStaff = true;
             }
 
             if (isStaff) {
@@ -272,15 +252,11 @@
             e.preventDefault();
             const type = document.getElementById('jobType').value;
 
-            // Check Recruitment Status from DB before submitting
-            if (_supabase) {
-                try {
-                    const { data } = await _supabase.from('settings').select('value').eq('key', `recruitment_${type}`).single();
-                    if (data && data.value === false) {
-                        showFeedback(false, `نعتذر، التقديم لقسم ${type === 'police' ? 'الشرطة' : 'الإسعاف'} مغلق حالياً.`);
-                        return;
-                    }
-                } catch (e) { console.error("Recruitment Check Error:", e); }
+            // Check Recruitment Status from LocalStorage
+            const isRecruiting = getSetting(`recruitment_${type}`, true);
+            if (!isRecruiting) {
+                showFeedback(false, `نعتذر، التقديم لقسم ${type === 'police' ? 'الشرطة' : 'الإسعاف'} مغلق حالياً.`);
+                return;
             }
 
             const data = {
@@ -292,17 +268,15 @@
             const appCode = 'RC-' + Math.random().toString(36).substr(2, 6).toUpperCase();
             
             try {
-                // Save to DB if available
-                if (_supabase) {
-                    await _supabase.from('applications').insert({
-                        fullName: data.fullName,
-                        age: data.age,
-                        discordId: data.discordId,
-                        type: type,
-                        reason: data.reason,
-                        code: appCode
-                    });
-                }
+                // Save to LocalStorage
+                const apps = JSON.parse(localStorage.getItem('realm_apps') || '[]');
+                apps.push({
+                    ...data,
+                    type: type,
+                    code: appCode,
+                    created_at: new Date().toISOString()
+                });
+                localStorage.setItem('realm_apps', JSON.stringify(apps));
 
                 await fetch(WEBHOOKS[type], {
                     method: 'POST',
