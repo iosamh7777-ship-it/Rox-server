@@ -320,14 +320,24 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         // --- STORAGE HELPERS (REPLACING SUPABASE) ---
+        const getSetting = (key, defaultVal) => {
+            const settings = JSON.parse(localStorage.getItem('realm_settings') || '{}');
+            return settings[key] !== undefined ? settings[key] : defaultVal;
+        };
+
         const getTable = (name) => JSON.parse(localStorage.getItem(`realm_${name}`) || '[]');
         const setTable = (name, data) => localStorage.setItem(`realm_${name}`, JSON.stringify(data));
 
         // Configuration
         const CLIENT_ID = '1458487352438554676';
         const REDIRECT_URI = window.location.href.split('#')[0].split('?')[0];
-        const WEBHOOK_URL = 'https://discord.com/api/webhooks/1487153603192946748/KK2bnoUyNTMNJcHY1xexxhFt1rwJ99rbq8eJYwf5TMKGMbHrHjRVp45SnvLeqx6sI9Ic';
         const ADMIN_IDS = ['609296092835741696', '579499056536092672', '1026172587119755304', '1029823456386228356'];
+
+        async function updateDynamicUI() {
+            const serverName = getSetting('server_name', 'Realm City');
+            document.querySelectorAll('.server-name-txt').forEach(el => el.innerText = serverName);
+            document.title = `تقديم رقابة - ${serverName}`;
+        }
 
         async function checkAdminAccess(user) {
             if (!user) return;
@@ -514,7 +524,8 @@
                 });
                 setTable('apps', apps);
 
-                const response = await fetch(WEBHOOK_URL, {
+                const webhook = getSetting('webhook_store', 'https://discord.com/api/webhooks/1487153603192946748/KK2bnoUyNTMNJcHY1xexxhFt1rwJ99rbq8eJYwf5TMKGMbHrHjRVp45SnvLeqx6sI9Ic');
+                const response = await fetch(webhook, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
