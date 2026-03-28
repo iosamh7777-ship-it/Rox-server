@@ -493,7 +493,23 @@
         // --- DASHBOARD ---
         async function initDashboard() {
             try {
-                const apps = getTable('apps');
+                // Determine API URL (Local or Remote)
+                const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                    ? 'http://localhost:3000/api' 
+                    : '/api';
+
+                // Fetch applications from backend
+                let apps = [];
+                try {
+                    const response = await fetch(`${apiBase}/applications`);
+                    if (response.ok) {
+                        apps = await response.json();
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch apps from backend, falling back to localStorage", err);
+                    apps = getTable('apps');
+                }
+
                 const chefs = getTable('chefs');
                 const promos = getTable('coupons');
                 const sales = getTable('sales');
@@ -511,14 +527,14 @@
 
                 // Recent Items
                 const appList = document.getElementById('recent-apps');
-                appList.innerHTML = apps.length > 0 ? apps.slice(-5).reverse().map(app => `
+                appList.innerHTML = apps.length > 0 ? apps.slice(0, 5).map(app => `
                     <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
                         <div class="w-10 h-10 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-500"><i class="fas fa-file-alt"></i></div>
                         <div class="flex-grow">
                             <div class="font-bold text-sm">${app.fullName || 'بدون اسم'}</div>
-                            <div class="text-[10px] text-gray-500 uppercase">${app.type} - ${new Date(app.created_at).toLocaleDateString()}</div>
+                            <div class="text-[10px] text-gray-500 uppercase">${app.jobType || app.type} - ${new Date(app.created_at).toLocaleDateString()}</div>
                         </div>
-                        <button onclick="viewApp('${app.code}')" class="text-blue-500 text-xs font-bold hover:underline">عرض</button>
+                        <button onclick="viewApp('${app.appCode || app.code}')" class="text-blue-500 text-xs font-bold hover:underline">عرض</button>
                     </div>
                 `).join('') : '<p class="text-center text-gray-600 py-10">لا يوجد تقديمات حالياً</p>';
 
@@ -558,27 +574,54 @@
 
         // --- APPLICATIONS ---
         async function renderApps() {
-            const apps = getTable('apps');
+            const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                ? 'http://localhost:3000/api' 
+                : '/api';
+
+            let apps = [];
+            try {
+                const response = await fetch(`${apiBase}/applications`);
+                if (response.ok) {
+                    apps = await response.json();
+                }
+            } catch (err) {
+                console.error("Failed to fetch apps from backend", err);
+                apps = getTable('apps');
+            }
+
             const tbody = document.getElementById('apps-table-body');
-            tbody.innerHTML = apps.length > 0 ? apps.slice().reverse().map(app => `
+            tbody.innerHTML = apps.length > 0 ? apps.map(app => `
                 <tr class="border-b border-white/5 hover:bg-white/[0.02] transition-all">
                     <td class="p-6 font-bold text-sm">${app.fullName || 'بدون اسم'}</td>
                     <td class="p-6 text-gray-400 text-sm">${app.age}</td>
-                    <td class="p-6 uppercase text-xs font-black text-blue-500">${app.type}</td>
-                    <td class="p-6 font-mono text-xs text-gray-500">${app.code}</td>
-                    <td class="p-6"><button onclick="viewApp('${app.code}')" class="bg-blue-600/10 text-blue-500 px-4 py-2 rounded-lg text-xs font-bold">مراجعة</button></td>
+                    <td class="p-6 uppercase text-xs font-black text-blue-500">${app.jobType || app.type}</td>
+                    <td class="p-6 font-mono text-xs text-gray-500">${app.appCode || app.code}</td>
+                    <td class="p-6"><button onclick="viewApp('${app.appCode || app.code}')" class="bg-blue-600/10 text-blue-500 px-4 py-2 rounded-lg text-xs font-bold">مراجعة</button></td>
                 </tr>
             `).join('') : '<tr><td colspan="5" class="p-20 text-center text-gray-600">لا يوجد طلبات حالياً</td></tr>';
         }
 
         async function viewApp(code) {
-            const apps = getTable('apps');
-            const app = apps.find(a => a.code === code);
+            const apiBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                ? 'http://localhost:3000/api' 
+                : '/api';
+
+            let apps = [];
+            try {
+                const response = await fetch(`${apiBase}/applications`);
+                if (response.ok) {
+                    apps = await response.json();
+                }
+            } catch (err) {
+                apps = getTable('apps');
+            }
+
+            const app = apps.find(a => (a.appCode || a.code) === code);
             if (!app) return;
             document.getElementById('app-view-content').innerHTML = `
                 <div class="mb-10">
                     <h2 class="text-3xl font-black mb-2">${app.fullName || 'بدون اسم'}</h2>
-                    <p class="text-blue-500 font-black">${app.type.toUpperCase()}</p>
+                    <p class="text-blue-500 font-black">${(app.jobType || app.type).toUpperCase()}</p>
                 </div>
                 <div class="grid grid-cols-2 gap-6 mb-10 text-right">
                     <div class="bg-white/5 p-4 rounded-2xl"><span>العمر:</span> <b>${app.age}</b></div>

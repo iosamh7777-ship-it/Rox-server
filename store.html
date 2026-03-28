@@ -269,18 +269,33 @@
         </div>
     </footer>
 
-    <!-- AOS JS -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // --- STORAGE HELPERS (REPLACING SUPABASE) ---
+        // --- STORAGE HELPERS ---
         const getSetting = (key, defaultVal) => {
             const settings = JSON.parse(localStorage.getItem('realm_settings') || '{}');
             return settings[key] !== undefined ? settings[key] : defaultVal;
         };
 
+        const getTable = (name) => {
+            const data = localStorage.getItem(`realm_${name}`);
+            if (!data && name === 'products') {
+                // Initial Sample Products
+                const initial = [
+                    { id: 'p1', name: 'Sports Class A', price: '$20.00', img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80', cat: 'vehicles', cmd: 'givecar {id} comet2', desc: 'سيارة رياضية بتعديلات مخصصة وسرعة عالية.' },
+                    { id: 'p2', name: 'Hyper VIP S+', price: '$45.00', img: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=600&q=80', cat: 'vehicles', cmd: 'givecar {id} t20', desc: 'أسرع سيارة في المدينة بتصميم مستقبلي فريد.' },
+                    { id: 'p3', name: 'SUV Armored VIP', price: '$35.00', img: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=600&q=80', cat: 'vehicles', cmd: 'givecar {id} ballage', desc: 'سيارة دفع رباعي مصفحة للحماية القصوى.' },
+                    { id: 'p4', name: 'تأسيس عصابة (Basic)', price: '$40.00', img: 'https://images.unsplash.com/photo-1508921234172-b68ed335b3e6?auto=format&fit=crop&w=600&q=80', cat: 'gangs', cmd: 'creategang {id} basic', desc: 'إنشاء عصابة خاصة بك مع مقر بسيط.' },
+                    { id: 'p5', name: '1,000 RC Coin', price: '$10.00', img: 'https://images.unsplash.com/photo-1621416894569-0f39ed31d247?auto=format&fit=crop&w=600&q=80', cat: 'rccoins', cmd: 'addcoins {id} 1000', desc: 'عملات لشراء المنتجات الحصرية داخل اللعبة.' }
+                ];
+                localStorage.setItem('realm_products', JSON.stringify(initial));
+                return initial;
+            }
+            return JSON.parse(data || '[]');
+        };
+
         const CLIENT_ID = '1486841317316231310';
         const REDIRECT_URI = window.location.href.split('#')[0].split('?')[0];
-        const CFW_WEBHOOK = 'https://discord.com/api/webhooks/1487153603192946748/KK2bnoUyNTMNJcHY1xexxhFt1rwJ99rbq8eJYwf5TMKGMbHrHjRVp45SnvLeqx6sI9Ic';
         const ADMIN_IDS = ['609296092835741696', '579499056536092672', '1026172587119755304', '1029823456386228356'];
 
         // Admin Panel Logic
@@ -289,6 +304,7 @@
                 // Update Server Name
                 const serverName = getSetting('server_name', 'Realm City');
                 document.querySelectorAll('.server-name-txt').forEach(el => el.innerText = serverName);
+                document.title = `متجر - ${serverName}`;
 
                 const overlay = document.getElementById('storeClosedOverlay');
                 const isOpen = getSetting('store_open', true);
@@ -301,7 +317,7 @@
                     if (user) {
                         if (ADMIN_IDS.includes(user.id)) isStaff = true;
                         else {
-                            const chefs = JSON.parse(localStorage.getItem('realm_chefs') || '[]');
+                            const chefs = getTable('chefs');
                             if (chefs.some(c => c.id === user.id)) isStaff = true;
                         }
                     }
@@ -310,11 +326,11 @@
                 }
 
                 renderDynamicProducts();
-            } catch (e) { console.error("Store Status Error:", e); }
+            } catch (e) { console.error("Store UI Error:", e); }
         }
 
         function renderDynamicProducts() {
-            const products = JSON.parse(localStorage.getItem('realm_products') || '[]');
+            const products = getTable('products');
             const categories = ['vehicles', 'gangs', 'rccoins', 'services'];
             
             categories.forEach(cat => {
@@ -339,6 +355,7 @@
                     </div>
                 `).join('');
             });
+            if (typeof AOS !== 'undefined') AOS.refresh();
         }
 
         async function checkAdminAccess(user) {
@@ -493,17 +510,24 @@
             };
             setTimeout(hidePreloader, 3000); // Fail-safe
             
-            // 2. Initial Store Check (Important: Check status before auth for everyone)
-            if (_supabase) {
-                try { await updateStoreUI(); } catch(e) { console.error("Store UI Error:", e); }
-            }
+            // 2. AOS Visibility Fallback
+            setTimeout(() => {
+                document.querySelectorAll('[data-aos]').forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'none';
+                    el.style.visibility = 'visible';
+                });
+            }, 3500);
 
-            // 3. Handle Auth & UI
+            // 3. Initial Store Check
+            await updateStoreUI();
+
+            // 4. Handle Auth & UI
             try { handleAuth(); } catch(e) { console.error("Auth Error:", e); }
             try { initTicker(); } catch(e) { console.error("Ticker Error:", e); }
             try { initCursorHover(); } catch(e) { console.error("Cursor Error:", e); }
             
-            // 4. Final UI Tweaks
+            // 5. Final UI Tweaks
             hidePreloader();
             if (typeof AOS !== 'undefined') AOS.init({ duration: 800, once: true });
         });

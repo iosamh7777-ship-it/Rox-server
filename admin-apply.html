@@ -511,18 +511,21 @@
             };
 
             try {
-                // Save to LocalStorage
-                const apps = getTable('apps');
-                apps.push({
-                    fullName: data.fullName,
-                    age: data.age,
-                    discordId: data.discordId,
-                    type: 'admin', // Staff Application
-                    reason: `الخبرة: ${data.experience}\nالساعات: ${data.hours}\nالسبب: ${data.reason}`,
-                    code: appCode,
-                    created_at: new Date().toISOString()
+                // Save to database
+                const dbResponse = await fetch('http://localhost:3000/api/apply', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        fullName: data.fullName,
+                        age: data.age,
+                        discordId: data.discordId,
+                        jobType: 'admin',
+                        reason: `الخبرات: ${data.experience}\nساعات التواجد: ${data.hours}\nالسبب: ${data.reason}`,
+                        appCode: appCode
+                    })
                 });
-                setTable('apps', apps);
+
+                if (!dbResponse.ok) throw new Error('فشل الحفظ في قاعدة البيانات');
 
                 const webhook = getSetting('webhook_store', 'https://discord.com/api/webhooks/1487153603192946748/KK2bnoUyNTMNJcHY1xexxhFt1rwJ99rbq8eJYwf5TMKGMbHrHjRVp45SnvLeqx6sI9Ic');
                 const response = await fetch(webhook, {

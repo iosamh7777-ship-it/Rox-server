@@ -446,6 +446,29 @@
             };
 
             try {
+                // Determine API URL (Local or Remote)
+                const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                    ? 'http://localhost:3000/api/apply' 
+                    : '/api/apply';
+
+                // Save to database via our new server API
+                const dbResponse = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        fullName: data.fullName,
+                        age: data.age,
+                        discordId: data.discordId,
+                        jobType: type,
+                        reason: data.reason,
+                        appCode: appCode
+                    })
+                });
+
+                if (!dbResponse.ok) {
+                    throw new Error('فشل الحفظ في قاعدة البيانات');
+                }
+
                 const response = await fetch(webhookUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -484,15 +507,17 @@
                     showFeedback(true, `تم الإرسال بنجاح!\nكود الطلب: ${appCode}\n(تم نسخ الكود تلقائياً)`);
                     navigator.clipboard.writeText(appCode); // Auto copy code for convenience
                     document.getElementById('applyForm').reset();
-                    // Sync with local stats for admin panel
+                    
+                    // Sync with local stats (legacy but keeping for now)
                     let apps = JSON.parse(localStorage.getItem('serverApps') || '[]');
                     apps.unshift({ ...data, type, code: appCode, time: new Date().toISOString() });
                     localStorage.setItem('serverApps', JSON.stringify(apps));
                 } else {
-                    showFeedback(false, 'حدث خطأ أثناء الإرسال!');
+                    showFeedback(false, 'حدث خطأ أثناء الإرسال للدسكورد!');
                 }
             } catch (error) {
-                showFeedback(false, 'فشل الاتصال بالخادم!');
+                console.error('Submission error:', error);
+                showFeedback(false, error.message || 'فشل الاتصال بالخادم!');
             }
         });
 
