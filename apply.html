@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تقديم طلب - ROX ROLEPLAY</title>
+    <title>تقديم طلب - Realm City</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts - Cairo -->
@@ -20,6 +20,11 @@
             overflow-x: hidden;
             cursor: none;
         }
+        /* Preloader */
+        #preloader { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
+        .loader { width: 50px; height: 50px; border: 3px solid rgba(0, 210, 255, 0.1); border-top-color: #00d2ff; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         .hexagon-logo {
             width: 60px;
             height: 60px;
@@ -165,35 +170,46 @@
             .form-container { padding: 30px 20px; }
         }
 
-        /* Custom Cursor */
+        /* Custom Cursor from index.html */
         .cursor { 
-            width: 20px; 
-            height: 20px; 
-            border: 2px solid #00d2ff; 
-            border-radius: 50%; 
-            position: fixed; 
-            pointer-events: none; 
-            z-index: 9999; 
-            top: 0;
-            left: 0;
-            transition: transform 0.08s ease-out; 
-            will-change: transform;
+            position: fixed;
+            width: 25px;
+            height: 25px;
+            border: 2px solid #00d2ff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease-out, border-color 0.3s, background 0.3s;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
         }
+        
         .cursor-dot { 
-            width: 4px; 
-            height: 4px; 
-            background: #00d2ff; 
-            border-radius: 50%; 
-            position: fixed; 
-            pointer-events: none; 
-            z-index: 9999; 
-            top: 0;
-            left: 0;
-            will-change: transform;
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: #00d2ff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            transition: transform 0.05s ease-out;
+            box-shadow: 0 0 10px #00d2ff;
+        }
+
+        .cursor-hover {
+            transform: translate(-50%, -50%) scale(1.5);
+            background: rgba(0, 210, 255, 0.1);
+            border-color: #fff;
         }
     </style>
 </head>
-<body>
+<body class="antialiased">
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader"></div>
+    </div>
 
     <!-- Feedback Overlay -->
     <div id="statusOverlay" class="status-overlay">
@@ -203,7 +219,7 @@
 
     <!-- Background Elements -->
     <div class="bg-glow"></div>
-    <div class="bg-text">ROX</div>
+    <div class="bg-text">REALM</div>
 
     <!-- Custom Cursor -->
     <div class="cursor hidden md:block"></div>
@@ -216,7 +232,7 @@
                 <i class="fas fa-arrow-right ml-2 group-hover:-translate-x-1 transition-transform"></i> العودة للرئيسية
             </a>
             <a id="adminApplyLink" href="admin-apply.html" class="nav-item" style="display: none;">تقديم رقابة</a>
-            <a id="storeLink" href="store.html" class="nav-item" style="display: none;">المتجر</a>
+            <a id="storeLink" href="store.html" class="nav-item">المتجر</a>
         </div>
         
         <div class="flex items-center gap-6">
@@ -340,7 +356,7 @@
 
             // Show Store Link
             const storeLink = document.getElementById('storeLink');
-            if (storeLink) storeLink.style.display = 'block';
+            if (storeLink) storeLink.classList.add('active');
         }
 
         function logout() {
@@ -352,18 +368,36 @@
         const cursor = document.querySelector('.cursor');
         const cursorDot = document.querySelector('.cursor-dot');
         let mouseX = 0, mouseY = 0;
-        let isHovering = false;
 
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
             
-            // Using requestAnimationFrame for smoother performance
             requestAnimationFrame(() => {
-                cursor.style.transform = `translate3d(${mouseX - 10}px, ${mouseY - 10}px, 0) scale(${isHovering ? 2.5 : 1})`;
-                cursorDot.style.transform = `translate3d(${mouseX - 2}px, ${mouseY - 2}px, 0)`;
+                if (cursor) {
+                    cursor.style.left = `${mouseX}px`;
+                    cursor.style.top = `${mouseY}px`;
+                }
+                if (cursorDot) {
+                    cursorDot.style.left = `${mouseX}px`;
+                    cursorDot.style.top = `${mouseY}px`;
+                }
             });
         });
+
+        // Hover effects for cursor
+        function initCursorHover() {
+            const interactiveElements = document.querySelectorAll('a, button, .rule-card, .nav-item, select, input, textarea, .login-btn');
+            interactiveElements.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    if (cursor) cursor.classList.add('cursor-hover');
+                });
+                el.addEventListener('mouseleave', () => {
+                    if (cursor) cursor.classList.remove('cursor-hover');
+                });
+            });
+        }
+        initCursorHover();
 
         // Form Submission
         document.getElementById('applyForm').addEventListener('submit', async (e) => {
@@ -392,7 +426,7 @@
                 reason: document.getElementById('reason').value
             };
 
-            const appCode = 'ROX-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            const appCode = 'REALM-' + Math.random().toString(36).substr(2, 6).toUpperCase();
             const roleId = type === 'police' ? '1486744401014423654' : '1486744444853158089';
             const webhookUrl = WEBHOOKS[type];
             const embed = {
@@ -407,7 +441,7 @@
                     { name: '🔑 كود الطلب', value: `\`${appCode}\``, inline: true },
                     { name: '📝 السبب', value: `\`\`\`${data.reason}\`\`\`` }
                 ],
-                footer: { text: `ROX ROLEPLAY | ID: ${data.discordId}` },
+                footer: { text: `Realm City | ID: ${data.discordId}` },
                 timestamp: new Date()
             };
 
@@ -480,6 +514,17 @@
 
         // Initialize
         window.addEventListener('load', () => {
+            // Preloader
+            const hidePreloader = () => {
+                const preloader = document.getElementById('preloader');
+                if (preloader && preloader.style.display !== 'none') {
+                    preloader.style.opacity = '0';
+                    setTimeout(() => preloader.style.display = 'none', 500);
+                }
+            };
+            hidePreloader();
+            setTimeout(hidePreloader, 3000);
+
             handleAuth();
             AOS.init({ duration: 800, once: true });
             
@@ -502,20 +547,7 @@
                 document.getElementById('jobType').value = type;
             }
 
-            // Hover effects for cursor
-            const interactiveElements = document.querySelectorAll('a, button, input, select, textarea');
-            interactiveElements.forEach(el => {
-                el.addEventListener('mouseenter', () => {
-                    isHovering = true;
-                    cursor.style.borderColor = 'white';
-                    cursor.style.background = 'rgba(0, 210, 255, 0.1)';
-                });
-                el.addEventListener('mouseleave', () => {
-                    isHovering = false;
-                    cursor.style.borderColor = '#00d2ff';
-                    cursor.style.background = 'transparent';
-                });
-            });
+
         });
     </script>
 </body>

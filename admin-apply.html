@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تقديم رقابة - ROX ROLEPLAY</title>
+    <title>تقديم رقابة - Realm City</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts - Cairo -->
@@ -20,6 +20,11 @@
             overflow-x: hidden;
             cursor: none;
         }
+        /* Preloader */
+        #preloader { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
+        .loader { width: 50px; height: 50px; border: 3px solid rgba(0, 210, 255, 0.1); border-top-color: #00d2ff; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         .hexagon-logo {
             width: 60px;
             height: 60px;
@@ -165,39 +170,50 @@
             .form-container { padding: 30px 20px; }
         }
 
-        /* Custom Cursor */
+        /* Custom Cursor from index.html */
         .cursor { 
             position: fixed;
             width: 25px;
             height: 25px;
-            border: 2px solid #10b981; 
-            border-radius: 50%; 
-            pointer-events: none; 
-            z-index: 9999; 
+            border: 2px solid #00d2ff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
             transition: transform 0.1s ease-out, border-color 0.3s, background 0.3s;
             transform: translate(-50%, -50%);
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
         }
+        
         .cursor-dot { 
             position: fixed;
-            width: 6px; 
-            height: 6px; 
-            background: #10b981; 
-            border-radius: 50%; 
-            pointer-events: none; 
-            z-index: 10000; 
+            width: 6px;
+            height: 6px;
+            background: #00d2ff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
             transform: translate(-50%, -50%);
             transition: transform 0.05s ease-out;
-            box-shadow: 0 0 10px #10b981;
+            box-shadow: 0 0 10px #00d2ff;
         }
+
         .cursor-hover {
             transform: translate(-50%, -50%) scale(1.5);
-            background: rgba(16, 185, 129, 0.1);
+            background: rgba(0, 210, 255, 0.1);
             border-color: #fff;
         }
     </style>
 </head>
 <body>
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor hidden md:block"></div>
+    <div class="cursor-dot hidden md:block"></div>
 
     <!-- Feedback Overlay -->
     <div id="statusOverlay" class="status-overlay">
@@ -207,20 +223,15 @@
 
     <!-- Background Elements -->
     <div class="bg-glow"></div>
-    <div class="bg-text">ROX</div>
+    <div class="bg-text">REALM</div>
 
-    <!-- Custom Cursor -->
-    <div class="cursor hidden md:block"></div>
-    <div class="cursor-dot hidden md:block"></div>
-
-    <!-- Navigation Bar -->
     <nav class="navbar-top">
         <div class="flex gap-6 items-center">
             <a href="index.html" class="nav-item group">
                 <i class="fas fa-arrow-right ml-2 group-hover:-translate-x-1 transition-transform"></i> العودة للرئيسية
             </a>
             <a id="adminApplyLink" href="admin-apply.html" class="nav-item" style="display: none;">تقديم رقابة</a>
-            <a id="storeLink" href="store.html" class="nav-item" style="display: none;">المتجر</a>
+            <a id="storeLink" href="store.html" class="nav-item">المتجر</a>
         </div>
         
         <div class="flex items-center gap-6">
@@ -369,7 +380,7 @@
 
             // Show Store Link
             const storeLink = document.getElementById('storeLink');
-            if (storeLink) storeLink.style.display = 'block';
+            if (storeLink) storeLink.classList.add('active');
         }
 
         function logout() {
@@ -385,13 +396,32 @@
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
+            
             requestAnimationFrame(() => {
-                cursor.style.left = `${mouseX}px`;
-                cursor.style.top = `${mouseY}px`;
-                cursorDot.style.left = `${mouseX}px`;
-                cursorDot.style.top = `${mouseY}px`;
+                if (cursor) {
+                    cursor.style.left = `${mouseX}px`;
+                    cursor.style.top = `${mouseY}px`;
+                }
+                if (cursorDot) {
+                    cursorDot.style.left = `${mouseX}px`;
+                    cursorDot.style.top = `${mouseY}px`;
+                }
             });
         });
+
+        // Hover effects for cursor
+        function initCursorHover() {
+            const interactiveElements = document.querySelectorAll('a, button, input, select, textarea, .nav-item, .login-btn');
+            interactiveElements.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    if (cursor) cursor.classList.add('cursor-hover');
+                });
+                el.addEventListener('mouseleave', () => {
+                    if (cursor) cursor.classList.remove('cursor-hover');
+                });
+            });
+        }
+        initCursorHover();
 
         // Form Submission
         document.getElementById('applyForm')?.addEventListener('submit', async (e) => {
@@ -412,7 +442,7 @@
                 reason: document.getElementById('reason').value
             };
 
-            const appCode = 'ROX-ADMIN-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            const appCode = 'REALM-ADMIN-' + Math.random().toString(36).substr(2, 6).toUpperCase();
             
             const embed = {
                 title: `🛡️ طلب تقديم رقابة جديد`,
@@ -426,7 +456,7 @@
                     { name: '⏰ الساعات اليومية', value: `\`${data.hours}\``, inline: true },
                     { name: '📝 السبب والمؤهلات', value: `\`\`\`${data.reason}\`\`\`` }
                 ],
-                footer: { text: `ROX ROLEPLAY | ID: ${data.discordId}` },
+                footer: { text: `Realm City | ID: ${data.discordId}` },
                 timestamp: new Date()
             };
 
@@ -482,23 +512,50 @@
 
         // Initialize
         window.addEventListener('load', () => {
+            // Preloader
+            const hidePreloader = () => {
+                const preloader = document.getElementById('preloader');
+                if (preloader && preloader.style.display !== 'none') {
+                    preloader.style.opacity = '0';
+                    setTimeout(() => preloader.style.display = 'none', 500);
+                }
+            };
+            hidePreloader();
+            setTimeout(hidePreloader, 3000);
+
             handleAuth();
             AOS.init({ duration: 800, once: true });
-            
-            // Hover effects for cursor
-            const interactiveElements = document.querySelectorAll('a, button, input, select, textarea');
-            interactiveElements.forEach(el => {
-                el.addEventListener('mouseenter', () => {
-                    isHovering = true;
-                    cursor.style.borderColor = 'white';
-                    cursor.style.background = 'rgba(16, 185, 129, 0.1)';
-                });
-                el.addEventListener('mouseleave', () => {
-                    isHovering = false;
-                    cursor.style.borderColor = '#10b981';
-                    cursor.style.background = 'transparent';
+
+            // Unified Cursor JS
+            const cursor = document.querySelector('.cursor');
+            const cursorDot = document.querySelector('.cursor-dot');
+            let mouseX = 0, mouseY = 0;
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX; mouseY = e.clientY;
+                requestAnimationFrame(() => {
+                    if (cursor) {
+                        cursor.style.left = `${mouseX}px`;
+                        cursor.style.top = `${mouseY}px`;
+                    }
+                    if (cursorDot) {
+                        cursorDot.style.left = `${mouseX}px`;
+                        cursorDot.style.top = `${mouseY}px`;
+                    }
                 });
             });
+            
+            function initCursorHover() {
+                const interactiveElements = document.querySelectorAll('a, button, select, input, textarea');
+                interactiveElements.forEach(el => {
+                    el.addEventListener('mouseenter', () => {
+                        if (cursor) cursor.classList.add('cursor-hover');
+                    });
+                    el.addEventListener('mouseleave', () => {
+                        if (cursor) cursor.classList.remove('cursor-hover');
+                    });
+                });
+            }
+            initCursorHover();
         });
     </script>
 </body>

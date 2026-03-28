@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إتمام الشراء - Realm City</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AOS Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+            cursor: none;
+        }
+        /* Preloader */
+        #preloader { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
+        .loader { width: 50px; height: 50px; border: 3px solid rgba(0, 210, 255, 0.1); border-top-color: #00d2ff; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Custom Cursor */
+        .cursor { position: fixed; width: 25px; height: 25px; border: 2px solid #00d2ff; border-radius: 50%; pointer-events: none; z-index: 9999; transition: transform 0.1s ease-out, border-color 0.3s, background 0.3s; transform: translate(-50%, -50%); box-shadow: 0 0 15px rgba(0, 210, 255, 0.5); }
+        .cursor-dot { position: fixed; width: 6px; height: 6px; background: #00d2ff; border-radius: 50%; pointer-events: none; z-index: 10000; transform: translate(-50%, -50%); transition: transform 0.05s ease-out; box-shadow: 0 0 10px #00d2ff; }
+        .cursor-hover { transform: translate(-50%, -50%) scale(1.5); background: rgba(0, 210, 255, 0.1); border-color: #fff; }
+
+        .navbar-top { position: fixed; top: 0; width: 100%; z-index: 1000; background: rgba(0, 0, 0, 0.95); padding: 15px 60px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 210, 255, 0.1); backdrop-filter: blur(10px); }
+        .nav-item { color: #ffffff; font-weight: 700; font-size: 16px; text-decoration: none; transition: all 0.3s ease; opacity: 0.8; }
+        .nav-item:hover { opacity: 1; color: #00d2ff; }
+
+        .checkout-container { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 30px; padding: 40px; margin-top: 120px; }
+        .form-input { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); padding: 16px; border-radius: 16px; width: 100%; transition: all 0.3s; color: white; }
+        .form-input:focus { border-color: #00d2ff; background: rgba(0, 210, 255, 0.05); outline: none; }
+
+        .status-overlay { position: fixed; inset: 0; bg: rgba(0,0,0,0.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        .status-overlay.active { display: flex; }
+        .status-step { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; opacity: 0.3; transition: 0.3s; }
+        .status-step.active { opacity: 1; color: #00d2ff; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Status Overlay -->
+    <div id="statusOverlay" class="status-overlay">
+        <div id="statusIcon" class="mb-8 text-6xl"></div>
+        <h2 id="statusTitle" class="text-4xl font-black mb-10 text-center">جاري تنفيذ الطلب</h2>
+        <div class="w-full max-w-md px-8">
+            <div id="step1" class="status-step active"><i class="fas fa-shield-check"></i> <span class="font-bold">التحقق من الدفع...</span></div>
+            <div id="step2" class="status-step"><i class="fas fa-database"></i> <span class="font-bold">ربط المعرف بنظام CFW...</span></div>
+            <div id="step3" class="status-step"><i class="fas fa-server"></i> <span class="font-bold">إرسال الأمر لسيرفر Realm City...</span></div>
+            <div id="step4" class="status-step"><i class="fas fa-gift"></i> <span class="font-bold">تأكيد استلام المنتج...</span></div>
+        </div>
+        <div id="statusText" class="mt-10 text-gray-400 font-bold text-center px-6"></div>
+        <button id="closeStatusBtn" onclick="window.location.href='store.html'" class="hidden mt-12 bg-white/10 px-8 py-3 rounded-xl font-bold hover:bg-white/20">العودة للمتجر</button>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor hidden md:block"></div>
+    <div class="cursor-dot hidden md:block"></div>
+
+    <nav class="navbar-top">
+        <div class="flex gap-8 items-center">
+            <a href="store.html" class="nav-item"><i class="fas fa-arrow-right ml-2"></i> العودة للمتجر</a>
+        </div>
+        
+        <div class="flex items-center gap-6">
+            <div id="loginSection" class="hidden">
+                <button onclick="loginWithDiscord()" class="bg-[#5865F2] text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2">
+                    <i class="fab fa-discord"></i> تسجيل الدخول
+                </button>
+            </div>
+            <div id="userSection" class="hidden items-center gap-6 bg-white/5 px-4 py-2 rounded-xl border border-blue-500/20">
+                <img id="userAvatar" class="w-8 h-8 rounded-full border border-blue-500" src="" alt="">
+                <div class="flex flex-col">
+                    <span id="userName" class="text-xs font-black"></span>
+                    <span onclick="logout()" class="text-[10px] text-red-500 font-bold cursor-pointer hover:underline">تسجيل الخروج</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-2xl mx-auto px-6">
+        <div class="checkout-container" data-aos="fade-up">
+            <h2 class="text-4xl font-black mb-2 text-blue-500">تأكيد الشراء</h2>
+            <p id="itemDisplay" class="text-gray-400 mb-8 font-bold text-lg">تحميل بيانات المنتج...</p>
+            
+            <form id="checkoutForm" class="space-y-6">
+                <div>
+                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-3">طريقة التعرف (Identifier)</label>
+                    <div class="flex gap-3">
+                        <select id="idType" class="form-input w-1/3" onchange="toggleIdPlaceholder()">
+                            <option value="discord">Discord</option>
+                            <option value="fivem">FiveM ID</option>
+                        </select>
+                        <input type="text" id="playerIdentifier" class="form-input w-2/3" placeholder="أدخل المعرف الخاص بك" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-3">كود الخصم (اختياري)</label>
+                    <div class="flex gap-3">
+                        <input type="text" id="discountCode" class="form-input" placeholder="هل لديك كود؟">
+                        <button type="button" onclick="applyDiscount()" class="bg-white/10 px-6 rounded-xl font-bold hover:bg-white/20 transition-all">تطبيق</button>
+                    </div>
+                </div>
+
+                <div class="bg-blue-500/5 p-5 rounded-2xl border border-blue-500/10">
+                    <div class="flex justify-between mb-2"><span class="text-gray-400">السعر:</span> <span id="originalPrice" class="font-bold"></span></div>
+                    <div class="flex justify-between mb-4"><span class="text-gray-400">الخصم:</span> <span id="discountValue" class="text-green-500 font-bold">0%</span></div>
+                    <div class="flex justify-between border-t border-white/5 pt-4"><span class="text-xl font-black">الإجمالي:</span> <span id="finalPrice" class="text-xl font-black text-blue-500"></span></div>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-blue-600/20">
+                    إتمام الدفع والربط بالسيرفر <i class="fas fa-shield-check mr-2"></i>
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        const CFW_WEBHOOK = 'https://discord.com/api/webhooks/1487153603192946748/KK2bnoUyNTMNJcHY1xexxhFt1rwJ99rbq8eJYwf5TMKGMbHrHjRVp45SnvLeqx6sI9Ic';
+        let discountApplied = 0;
+        let itemData = {};
+
+        // Get URL Params
+        window.addEventListener('load', () => {
+            // Preloader
+            const hidePreloader = () => {
+                const preloader = document.getElementById('preloader');
+                if (preloader && preloader.style.display !== 'none') {
+                    preloader.style.opacity = '0';
+                    setTimeout(() => preloader.style.display = 'none', 500);
+                }
+            };
+            hidePreloader();
+            setTimeout(hidePreloader, 3000);
+
+            try {
+                const params = new URLSearchParams(window.location.search);
+                itemData = {
+                    name: params.get('name'),
+                    price: params.get('price'),
+                    command: params.get('command')
+                };
+
+                if (!itemData.name) {
+                    window.location.href = 'store.html';
+                    return;
+                }
+
+                document.getElementById('itemDisplay').innerText = itemData.name;
+                document.getElementById('originalPrice').innerText = itemData.price;
+                document.getElementById('finalPrice').innerText = itemData.price;
+
+                const user = JSON.parse(localStorage.getItem('discordUser'));
+                if (user) {
+                    updateUI(user);
+                } else {
+                    document.getElementById('loginSection').classList.remove('hidden');
+                }
+
+                if (typeof AOS !== 'undefined') {
+                    AOS.init({ duration: 800, once: true });
+                }
+            } catch (e) {
+                console.error("Checkout Load Error:", e);
+                // Fallback to show content if AOS or other scripts fail
+                document.querySelectorAll('[data-aos]').forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'none';
+                    el.style.visibility = 'visible';
+                });
+            }
+        });
+
+        function updateUI(user) {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('userSection').classList.remove('hidden');
+            document.getElementById('userSection').classList.add('flex');
+            document.getElementById('userName').innerText = user.global_name || user.username;
+            document.getElementById('userAvatar').src = user.avatar 
+                ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+                : 'https://cdn.discordapp.com/embed/avatars/0.png';
+            
+            document.getElementById('playerIdentifier').value = user.id;
+            document.getElementById('playerIdentifier').readOnly = true;
+        }
+
+        function logout() {
+            localStorage.removeItem('discordUser');
+            window.location.reload();
+        }
+
+        function loginWithDiscord() {
+            const CLIENT_ID = '1486841317316231310';
+            const REDIRECT_URI = window.location.href.split('#')[0].split('?')[0];
+            const url = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
+            window.location.href = url;
+        }
+
+        function toggleIdPlaceholder() {
+            const type = document.getElementById('idType').value;
+            const input = document.getElementById('playerIdentifier');
+            const user = JSON.parse(localStorage.getItem('discordUser'));
+            if (type === 'discord' && user) {
+                input.value = user.id;
+                input.readOnly = true;
+            } else {
+                input.value = '';
+                input.readOnly = false;
+                input.placeholder = type === 'fivem' ? 'license:xxx' : 'أدخل المعرف يدوياً';
+            }
+        }
+
+        function applyDiscount() {
+            const codeInput = document.getElementById('discountCode').value.toUpperCase().trim();
+            const promos = JSON.parse(localStorage.getItem('promoCodes') || '[]');
+            
+            // Check dynamic codes from admin
+            const foundPromo = promos.find(p => p.code === codeInput);
+            
+            if (codeInput === 'REALM2026' || codeInput === 'CFW') {
+                discountApplied = 0.20;
+                updatePrices();
+                alert('تم تطبيق خصم 20%!');
+            } else if (foundPromo) {
+                discountApplied = foundPromo.discount / 100;
+                updatePrices();
+                alert(`تم تطبيق خصم ${foundPromo.discount}%!`);
+            } else {
+                alert('كود غير صحيح!');
+            }
+        }
+
+        function updatePrices() {
+            const original = parseFloat(itemData.price.replace('$', ''));
+            const final = original * (1 - discountApplied);
+            document.getElementById('discountValue').innerText = `${(discountApplied * 100)}%`;
+            document.getElementById('finalPrice').innerText = `$${final.toFixed(2)}`;
+        }
+
+        document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const identifier = document.getElementById('playerIdentifier').value;
+            const type = document.getElementById('idType').value;
+
+            const overlay = document.getElementById('statusOverlay');
+            overlay.classList.add('active');
+            
+            for(let i=1; i<=4; i++) {
+                document.getElementById(`step${i}`).classList.add('active');
+                await new Promise(r => setTimeout(r, 1500));
+            }
+
+            const embed = {
+                title: "💎 عملية شراء احترافية (CFW v2.0)",
+                color: 3447003,
+                fields: [
+                    { name: "📦 المنتج", value: `\`${itemData.name}\``, inline: true },
+                    { name: "💰 السعر", value: `\`${document.getElementById('finalPrice').innerText}\``, inline: true },
+                    { name: "🆔 المعرف", value: `\`${identifier}\` (${type})`, inline: false },
+                    { name: "⚙️ الأمر", value: `\`\`\`${itemData.command.replace('{id}', identifier)}\`\`\`` }
+                ],
+                timestamp: new Date()
+            };
+
+            try {
+                const response = await fetch(CFW_WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ embeds: [embed] })
+                });
+
+                if (response.ok) {
+                    document.getElementById('statusIcon').innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
+                    document.getElementById('statusTitle').innerText = 'تمت العملية بنجاح!';
+                    document.getElementById('statusText').innerText = 'تم ربط طلبك بالسيرفر تلقائياً.';
+                    document.getElementById('closeStatusBtn').classList.remove('hidden');
+                }
+            } catch (err) {
+                alert('خطأ في الاتصال!');
+            }
+        });
+
+        // Unified Cursor JS
+        const cursor = document.querySelector('.cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+        let mouseX = 0, mouseY = 0;
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            requestAnimationFrame(() => {
+                if (cursor) {
+                    cursor.style.left = `${mouseX}px`;
+                    cursor.style.top = `${mouseY}px`;
+                }
+                if (cursorDot) {
+                    cursorDot.style.left = `${mouseX}px`;
+                    cursorDot.style.top = `${mouseY}px`;
+                }
+            });
+        });
+        
+        function initCursorHover() {
+            const interactiveElements = document.querySelectorAll('a, button, select, input, textarea');
+            interactiveElements.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    if (cursor) cursor.classList.add('cursor-hover');
+                });
+                el.addEventListener('mouseleave', () => {
+                    if (cursor) cursor.classList.remove('cursor-hover');
+                });
+            });
+        }
+        initCursorHover();
+    </script>
+</body>
+</html>
