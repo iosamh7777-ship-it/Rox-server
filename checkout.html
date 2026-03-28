@@ -157,7 +157,16 @@
                 }
             };
             hidePreloader();
-            setTimeout(hidePreloader, 3000);
+            setTimeout(hidePreloader, 3000); // Fail-safe for slow assets
+
+            // AOS Visibility Fallback
+            setTimeout(() => {
+                document.querySelectorAll('[data-aos]').forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'none';
+                    el.style.visibility = 'visible';
+                });
+            }, 3500);
 
             try {
                 const params = new URLSearchParams(window.location.search);
@@ -188,7 +197,7 @@
                 }
             } catch (e) {
                 console.error("Checkout Load Error:", e);
-                // Fallback to show content if AOS or other scripts fail
+                // Fallback to show content
                 document.querySelectorAll('[data-aos]').forEach(el => {
                     el.style.opacity = '1';
                     el.style.transform = 'none';

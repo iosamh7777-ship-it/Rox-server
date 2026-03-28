@@ -562,7 +562,6 @@
         }
 
         window.addEventListener('load', () => {
-            // Fail-safe: Hide preloader after 3 seconds even if load hasn't fully finished
             const hidePreloader = () => {
                 const preloader = document.getElementById('preloader');
                 if (preloader && preloader.style.display !== 'none') {
@@ -572,10 +571,19 @@
             };
             
             hidePreloader();
-            setTimeout(hidePreloader, 3000);
+            setTimeout(hidePreloader, 3000); // Fail-safe for slow assets
+
+            // AOS Visibility Fallback
+            setTimeout(() => {
+                document.querySelectorAll('[data-aos]').forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'none';
+                    el.style.visibility = 'visible';
+                });
+            }, 3500);
 
             // Check store status on load
-            updateStoreUI();
+            try { updateStoreUI(); } catch(e) { console.error("Store UI Error:", e); }
 
             // Safe initializations
             try { handleAuth(); } catch(e) { console.error("Auth Error:", e); }
@@ -584,15 +592,21 @@
             
             // Initialize AOS with a small delay to ensure DOM is ready
             setTimeout(() => {
-                if (typeof AOS !== 'undefined') {
-                    AOS.init({ duration: 800, once: true });
-                } else {
-                    // Fallback: If AOS fails, show all AOS elements
-                    document.querySelectorAll('[data-aos]').forEach(el => {
-                        el.style.opacity = '1';
-                        el.style.transform = 'none';
-                        el.style.visibility = 'visible';
-                    });
+                try {
+                    if (typeof AOS !== 'undefined') {
+                        AOS.init({ duration: 800, once: true });
+                    }
+                    // Final check to ensure visibility
+                    setTimeout(() => {
+                        document.querySelectorAll('[data-aos]').forEach(el => {
+                            if (window.getComputedStyle(el).opacity === "0") {
+                                el.style.opacity = "1";
+                            }
+                        });
+                    }, 500);
+                } catch(e) {
+                    console.error("AOS Init Error:", e);
+                    document.querySelectorAll('[data-aos]').forEach(el => el.style.opacity = '1');
                 }
             }, 100);
         });

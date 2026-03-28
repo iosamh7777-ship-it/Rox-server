@@ -239,6 +239,18 @@
             document.getElementById('discordId').value = user.id;
             document.getElementById('adminApplyLink').style.display = 'block';
             
+            // Check Recruitment Status from DB
+            if (_supabase) {
+                try {
+                    const { data: settings } = await _supabase.from('settings').select('*');
+                    const policeOpen = settings?.find(s => s.key === 'recruitment_police')?.value !== false;
+                    const emsOpen = settings?.find(s => s.key === 'recruitment_ems')?.value !== false;
+                    
+                    // Update form/UI based on recruitment status if needed
+                    // (e.g., disable submit button if closed)
+                } catch (e) { console.error("Settings Load Error:", e); }
+            }
+
             // Check in Database if Chefs or Admin
             let isStaff = false;
             if (ADMIN_IDS.includes(user.id)) isStaff = true;
@@ -259,6 +271,18 @@
         document.getElementById('applyForm').onsubmit = async (e) => {
             e.preventDefault();
             const type = document.getElementById('jobType').value;
+
+            // Check Recruitment Status from DB before submitting
+            if (_supabase) {
+                try {
+                    const { data } = await _supabase.from('settings').select('value').eq('key', `recruitment_${type}`).single();
+                    if (data && data.value === false) {
+                        showFeedback(false, `نعتذر، التقديم لقسم ${type === 'police' ? 'الشرطة' : 'الإسعاف'} مغلق حالياً.`);
+                        return;
+                    }
+                } catch (e) { console.error("Recruitment Check Error:", e); }
+            }
+
             const data = {
                 fullName: document.getElementById('fullName').value,
                 age: document.getElementById('age').value,
@@ -311,20 +335,37 @@
             setTimeout(() => { overlay.style.display = 'none'; }, 3000);
         }
 
-        window.onload = () => {
+        window.addEventListener('load', () => {
+            // 1. Hide Preloader immediately
             const hidePreloader = () => {
                 const preloader = document.getElementById('preloader');
-                if (preloader) {
+                if (preloader && preloader.style.display !== 'none') {
                     preloader.style.opacity = '0';
                     setTimeout(() => preloader.style.display = 'none', 500);
                 }
             };
-            
-            handleAuth();
             hidePreloader();
-            setTimeout(hidePreloader, 3000); // Fail-safe
-            AOS.init({ duration: 800, once: true });
-        };
+            setTimeout(hidePreloader, 3000); // Fail-safe for slow assets
+
+            // 2. AOS Visibility Fallback
+            setTimeout(() => {
+                document.querySelectorAll('[data-aos]').forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'none';
+                    el.style.visibility = 'visible';
+                });
+            }, 3500);
+
+            // 3. JS Logic
+            try {
+                handleAuth();
+                if (typeof AOS !== 'undefined') {
+                    AOS.init({ duration: 800, once: true });
+                }
+            } catch (e) {
+                console.error("Initialization Error:", e);
+            }
+        });
 
         const cursor = document.querySelector('.cursor'), dot = document.querySelector('.cursor-dot');
         window.onmousemove = (e) => {

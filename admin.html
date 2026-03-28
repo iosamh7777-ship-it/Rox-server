@@ -51,8 +51,10 @@
 
         <nav class="space-y-2">
             <a href="#" class="nav-link active" onclick="showSection('dashboard', this)"><i class="fas fa-chart-line"></i> الإحصائيات</a>
+            <a href="#" class="nav-link" onclick="showSection('applications', this)"><i class="fas fa-file-invoice"></i> التقديمات</a>
             <a href="#" class="nav-link" onclick="showSection('store', this)"><i class="fas fa-store"></i> المتجر</a>
             <a href="#" class="nav-link" onclick="showSection('coupons', this)"><i class="fas fa-ticket-alt"></i> الكوبونات</a>
+            <a href="#" class="nav-link" onclick="showSection('chefs', this)"><i class="fas fa-user-tie"></i> رؤساء الأقسام</a>
             <a href="#" class="nav-link" onclick="showSection('logs', this)"><i class="fas fa-history"></i> السجلات</a>
             <div class="pt-10 px-6">
                 <a href="index.html" class="w-full bg-white/5 text-center py-4 rounded-2xl block hover:bg-white/10 transition-all font-bold text-sm">العودة للموقع</a>
@@ -93,6 +95,24 @@
                 </div>
             </div>
 
+            <!-- Recruitment Toggles -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                <div class="stat-card flex items-center justify-between border-blue-500/20 bg-blue-500/5">
+                    <div>
+                        <h3 class="font-black text-xl mb-1">تقديم الشرطة</h3>
+                        <p id="police-status-label" class="text-green-500 font-bold">مفتوح حالياً</p>
+                    </div>
+                    <button id="togglePoliceBtn" onclick="toggleRecruitment('police')" class="bg-blue-600 px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition-all text-sm">تغيير الحالة</button>
+                </div>
+                <div class="stat-card flex items-center justify-between border-green-500/20 bg-green-500/5">
+                    <div>
+                        <h3 class="font-black text-xl mb-1">تقديم الإسعاف</h3>
+                        <p id="ems-status-label" class="text-green-500 font-bold">مفتوح حالياً</p>
+                    </div>
+                    <button id="toggleEmsBtn" onclick="toggleRecruitment('ems')" class="bg-green-600 px-6 py-2 rounded-xl font-bold hover:bg-green-700 transition-all text-sm">تغيير الحالة</button>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div class="stat-card h-96 overflow-hidden flex flex-col">
                     <h3 class="font-black text-xl mb-6 flex justify-between">
@@ -110,6 +130,38 @@
                         <!-- Content via JS -->
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- Applications Section -->
+        <section id="applications" class="admin-section" data-aos="fade-up">
+            <h1 class="text-4xl font-black mb-8">إدارة التقديمات</h1>
+            <div class="stat-card p-0 overflow-hidden">
+                <table class="w-full text-right">
+                    <thead class="bg-white/5 text-gray-500 text-xs font-black uppercase tracking-widest">
+                        <tr>
+                            <th class="p-6">الاسم</th>
+                            <th class="p-6">العمر</th>
+                            <th class="p-6">القسم</th>
+                            <th class="p-6">الكود</th>
+                            <th class="p-6">الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="apps-table-body">
+                        <!-- Content via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Chefs Section -->
+        <section id="chefs" class="admin-section" data-aos="fade-up">
+            <div class="flex justify-between items-center mb-10">
+                <h1 class="text-4xl font-black">رؤساء الأقسام</h1>
+                <button onclick="document.getElementById('chefModal').classList.add('flex')" class="bg-purple-600 px-8 py-3 rounded-2xl font-black hover:bg-purple-700 transition-all shadow-xl shadow-purple-600/20"><i class="fas fa-plus mr-2"></i> إضافة رئيس جديد</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="chefs-grid">
+                <!-- Content via JS -->
             </div>
         </section>
 
@@ -166,6 +218,42 @@
     </main>
 
     <!-- Modal Coupon -->
+    <!-- Modal Chef -->
+    <div id="chefModal" class="fixed inset-0 bg-black/90 z-[20000] hidden items-center justify-center p-6 backdrop-filter blur-md">
+        <div class="bg-[#0d0d0d] border border-purple-500/20 p-10 rounded-[40px] w-full max-w-md" data-aos="zoom-in">
+            <h2 class="text-3xl font-black mb-8 text-center">إضافة رئيس قسم</h2>
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2">Discord User ID</label>
+                    <input type="text" id="chef-id" class="form-input" placeholder="مثلاً: 609296092835741696">
+                </div>
+                <div>
+                    <label class="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2">القسم</label>
+                    <select id="chef-dept" class="form-input">
+                        <option value="police">الشرطة</option>
+                        <option value="ems">الإسعاف</option>
+                        <option value="all">إدارة شاملة</option>
+                    </select>
+                </div>
+                <div class="flex gap-4 pt-4">
+                    <button onclick="saveChef()" class="flex-grow bg-purple-600 py-4 rounded-2xl font-black hover:bg-purple-700 shadow-xl shadow-purple-600/20">حفظ البيانات</button>
+                    <button onclick="document.getElementById('chefModal').classList.remove('flex')" class="px-8 bg-white/5 rounded-2xl font-bold">إلغاء</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal App View -->
+    <div id="appModal" class="fixed inset-0 bg-black/90 z-[20000] hidden items-center justify-center p-6 backdrop-filter blur-md">
+        <div class="bg-[#0d0d0d] border border-blue-500/20 p-10 rounded-[40px] w-full max-w-2xl" data-aos="zoom-in">
+            <div id="app-view-content"></div>
+            <div class="flex gap-4 mt-10">
+                <button id="btn-accept-app" class="flex-grow bg-green-600 py-4 rounded-2xl font-black hover:bg-green-700">قبول الطلب</button>
+                <button id="btn-deny-app" class="flex-grow bg-red-600 py-4 rounded-2xl font-black hover:bg-red-700">رفض الطلب</button>
+                <button onclick="document.getElementById('appModal').classList.remove('flex')" class="px-8 bg-white/5 rounded-2xl font-bold">إغلاق</button>
+            </div>
+        </div>
+    </div>
     <div id="couponModal" class="fixed inset-0 bg-black/90 z-[20000] hidden items-center justify-center p-6 backdrop-filter blur-md">
         <div class="bg-[#0d0d0d] border border-blue-500/20 p-10 rounded-[40px] w-full max-w-md" data-aos="zoom-in">
             <h2 class="text-3xl font-black mb-8 text-center">إنشاء كود خصم</h2>
@@ -202,41 +290,54 @@
         const ADMIN_IDS = ['609296092835741696', '579499056536092672', '1026172587119755304', '1029823456386228356'];
         
         // Security Check
-        window.addEventListener('load', async () => {
+        window.addEventListener('load', () => {
             const hidePreloader = () => {
                 const preloader = document.getElementById('preloader');
-                if (preloader) {
+                if (preloader && preloader.style.display !== 'none') {
                     preloader.style.opacity = '0';
                     setTimeout(() => preloader.style.display = 'none', 500);
                 }
             };
-
-            const user = JSON.parse(localStorage.getItem('discordUser'));
-            
-            // Check in Database if Chefs or Admin
-            let isAuthorized = false;
-            try {
-                if (user) {
-                    if (ADMIN_IDS.includes(user.id)) isAuthorized = true;
-                    else if (_supabase) {
-                        const { data: chefs } = await _supabase.from('chefs').select('*').eq('id', user.id);
-                        if (chefs && chefs.length > 0) isAuthorized = true;
-                    }
-                }
-            } catch (e) { console.error("Auth DB Check Error:", e); }
-
-            if (!isAuthorized) {
-                window.location.href = 'index.html';
-                return;
-            }
-
-            document.getElementById('adminName').innerText = user.global_name || user.username;
             hidePreloader();
-            setTimeout(hidePreloader, 3000); // Fail-safe
+            setTimeout(hidePreloader, 3000); // Fail-safe for slow assets
 
-            initDashboard();
-            updateStoreUI();
-            AOS.init({ duration: 800, once: true });
+            // AOS Visibility Fallback
+            setTimeout(() => {
+                document.querySelectorAll('[data-aos]').forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'none';
+                    el.style.visibility = 'visible';
+                });
+            }, 3500);
+
+            // Auth and UI Check
+            const checkAccess = async () => {
+                const user = JSON.parse(localStorage.getItem('discordUser'));
+                let isAuthorized = false;
+                try {
+                    if (user) {
+                        if (ADMIN_IDS.includes(user.id)) isAuthorized = true;
+                        else if (_supabase) {
+                            const { data: chefs } = await _supabase.from('chefs').select('*').eq('id', user.id);
+                            if (chefs && chefs.length > 0) isAuthorized = true;
+                        }
+                    }
+                } catch (e) { console.error("Auth DB Check Error:", e); }
+
+                if (!isAuthorized) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                document.getElementById('adminName').innerText = user.global_name || user.username;
+                initDashboard();
+                updateStoreUI();
+                if (typeof AOS !== 'undefined') {
+                    AOS.init({ duration: 800, once: true });
+                }
+            };
+
+            checkAccess();
         });
 
         async function initDashboard() {
@@ -246,20 +347,29 @@
                 const { data: chefs } = await _supabase.from('chefs').select('*');
                 const { data: promos } = await _supabase.from('promo_codes').select('*');
                 const { data: sales } = await _supabase.from('sales').select('*').order('created_at', { ascending: false });
+                const { data: settings } = await _supabase.from('settings').select('*');
 
                 document.getElementById('stat-apps').innerText = apps?.length || 0;
                 document.getElementById('stat-chefs').innerText = chefs?.length || 0;
                 document.getElementById('stat-coupons').innerText = promos?.length || 0;
                 document.getElementById('stat-orders').innerText = sales?.length || 0;
 
+                // Recruitment Status from DB
+                const policeOpen = settings?.find(s => s.key === 'recruitment_police')?.value !== false;
+                const emsOpen = settings?.find(s => s.key === 'recruitment_ems')?.value !== false;
+                
+                updateRecruitmentUI('police', policeOpen);
+                updateRecruitmentUI('ems', emsOpen);
+
                 const appList = document.getElementById('recent-apps');
                 appList.innerHTML = apps?.slice(0, 5).map(app => `
                     <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
                         <div class="w-10 h-10 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-500"><i class="fas fa-file-alt"></i></div>
-                        <div>
+                        <div class="flex-grow">
                             <div class="font-bold text-sm">${app.fullName}</div>
                             <div class="text-[10px] text-gray-500 uppercase">${app.type} - ${new Date(app.created_at).toLocaleDateString()}</div>
                         </div>
+                        <button onclick="viewApp('${app.code}')" class="text-blue-500 text-xs font-bold hover:underline">عرض</button>
                     </div>
                 `).join('') || '<p class="text-center text-gray-600 py-10">لا يوجد تقديمات حالياً</p>';
 
@@ -274,6 +384,145 @@
                     </div>
                 `).join('') || '<p class="text-center text-gray-600 py-10">لا يوجد مبيعات حالياً</p>';
             } catch (e) { console.error("DB Load Error:", e); }
+        }
+
+        // Recruitment Logic
+        async function toggleRecruitment(type) {
+            if (!_supabase) return;
+            const { data } = await _supabase.from('settings').select('value').eq('key', `recruitment_${type}`).single();
+            const newStatus = !data?.value;
+            await _supabase.from('settings').upsert({ key: `recruitment_${type}`, value: newStatus });
+            addLog(`قام المدير بـ ${newStatus ? 'فتح' : 'إغلاق'} تقديم ${type === 'police' ? 'الشرطة' : 'الإسعاف'}`, 'system');
+            updateRecruitmentUI(type, newStatus);
+        }
+
+        function updateRecruitmentUI(type, isOpen) {
+            const label = document.getElementById(`${type}-status-label`);
+            const btn = document.getElementById(`toggle${type.charAt(0).toUpperCase() + type.slice(1)}Btn`);
+            if (!label || !btn) return;
+
+            if (isOpen) {
+                label.innerText = 'مفتوح حالياً';
+                label.className = 'text-green-500 font-bold';
+                btn.innerText = 'إغلاق التقديم';
+                btn.className = 'bg-red-600/20 text-red-500 px-6 py-2 rounded-xl font-bold border border-red-500/30 hover:bg-red-600 hover:text-white transition-all text-sm';
+            } else {
+                label.innerText = 'مغلق حالياً';
+                label.className = 'text-red-500 font-bold';
+                btn.innerText = 'فتح التقديم';
+                btn.className = 'bg-green-600/20 text-green-500 px-6 py-2 rounded-xl font-bold border border-green-500/30 hover:bg-green-600 hover:text-white transition-all text-sm';
+            }
+        }
+
+        // Applications Logic
+        async function renderApps() {
+            if (!_supabase) return;
+            const { data: apps } = await _supabase.from('applications').select('*').order('created_at', { ascending: false });
+            const tbody = document.getElementById('apps-table-body');
+            tbody.innerHTML = apps?.map(app => `
+                <tr class="border-b border-white/5 hover:bg-white/[0.02] transition-all">
+                    <td class="p-6 font-bold text-sm">${app.fullName}</td>
+                    <td class="p-6 text-gray-400 text-sm">${app.age}</td>
+                    <td class="p-6 uppercase text-xs font-black text-blue-500">${app.type}</td>
+                    <td class="p-6 font-mono text-xs text-gray-500">${app.code}</td>
+                    <td class="p-6">
+                        <button onclick="viewApp('${app.code}')" class="bg-blue-600/10 text-blue-500 px-4 py-2 rounded-lg text-xs font-bold hover:bg-blue-600 hover:text-white transition-all">مراجعة</button>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="5" class="p-20 text-center text-gray-600">لا يوجد طلبات حالياً</td></tr>';
+        }
+
+        async function viewApp(code) {
+            if (!_supabase) return;
+            const { data: app } = await _supabase.from('applications').select('*').eq('code', code).single();
+            if (!app) return;
+
+            const modal = document.getElementById('appModal');
+            const content = document.getElementById('app-view-content');
+            content.innerHTML = `
+                <div class="flex justify-between items-start mb-10">
+                    <div>
+                        <h2 class="text-3xl font-black mb-2">${app.fullName}</h2>
+                        <span class="bg-blue-500/10 text-blue-500 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">${app.type}</span>
+                    </div>
+                    <div class="text-left">
+                        <div class="text-xs text-gray-500 font-bold uppercase mb-1">كود الطلب</div>
+                        <div class="text-xl font-mono text-white font-black">${app.code}</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-8 mb-10">
+                    <div class="bg-white/5 p-6 rounded-3xl border border-white/5">
+                        <div class="text-xs text-gray-500 font-bold mb-2 uppercase">العمر</div>
+                        <div class="text-xl font-bold">${app.age} سنة</div>
+                    </div>
+                    <div class="bg-white/5 p-6 rounded-3xl border border-white/5">
+                        <div class="text-xs text-gray-500 font-bold mb-2 uppercase">Discord ID</div>
+                        <div class="text-xl font-mono font-bold">${app.discordId}</div>
+                    </div>
+                </div>
+                <div class="bg-white/5 p-8 rounded-3xl border border-white/5">
+                    <div class="text-xs text-gray-500 font-bold mb-4 uppercase italic">سبب الانضمام والخبرات</div>
+                    <p class="text-gray-300 leading-relaxed whitespace-pre-wrap">${app.reason}</p>
+                </div>
+            `;
+
+            document.getElementById('btn-accept-app').onclick = () => handleApp(app, 'accept');
+            document.getElementById('btn-deny-app').onclick = () => handleApp(app, 'deny');
+            
+            modal.classList.add('flex');
+        }
+
+        async function handleApp(app, action) {
+            if (!confirm(`هل أنت متأكد من ${action === 'accept' ? 'قبول' : 'رفض'} هذا الطلب؟`)) return;
+            
+            addLog(`قام المدير بـ ${action === 'accept' ? 'قبول' : 'رفض'} طلب: ${app.fullName} (${app.code})`, 'system');
+            // In a real scenario, you would delete from DB or mark as processed
+            await _supabase.from('applications').delete().eq('code', app.code);
+            
+            alert(`تم ${action === 'accept' ? 'القبول' : 'الرفض'} بنجاح.`);
+            document.getElementById('appModal').classList.remove('flex');
+            renderApps();
+            initDashboard();
+        }
+
+        // Chefs Logic
+        async function saveChef() {
+            if (!_supabase) return;
+            const id = document.getElementById('chef-id').value.trim();
+            const dept = document.getElementById('chef-dept').value;
+
+            if (!id) return alert('يرجى إدخال Discord ID');
+
+            await _supabase.from('chefs').insert({ id, dept });
+            addLog(`تم تعيين رئيس قسم جديد: ${id} (${dept})`, 'system');
+            document.getElementById('chefModal').classList.remove('flex');
+            renderChefs();
+        }
+
+        async function renderChefs() {
+            if (!_supabase) return;
+            const { data: chefs } = await _supabase.from('chefs').select('*');
+            const grid = document.getElementById('chefs-grid');
+            grid.innerHTML = chefs?.map(c => `
+                <div class="stat-card">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-500 text-xl"><i class="fas fa-user-tie"></i></div>
+                        <button onclick="deleteChef('${c.id}')" class="text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <h4 class="text-sm font-mono text-gray-400 mb-2">${c.id}</h4>
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full ${c.dept === 'all' ? 'bg-yellow-500' : (c.dept === 'police' ? 'bg-blue-500' : 'bg-green-500')}"></span>
+                        <p class="font-black uppercase text-xs tracking-widest">${c.dept === 'all' ? 'إدارة عامة' : (c.dept === 'police' ? 'رئيس شرطة' : 'رئيس إسعاف')}</p>
+                    </div>
+                </div>
+            `).join('') || '';
+        }
+
+        async function deleteChef(id) {
+            if (!_supabase) return;
+            await _supabase.from('chefs').delete().eq('id', id);
+            addLog(`تم سحب صلاحيات رئيس القسم: ${id}`, 'system');
+            renderChefs();
         }
 
         // Store Logic
@@ -294,6 +543,7 @@
             
             const btn = document.getElementById('toggleStoreBtn');
             const txt = document.getElementById('store-status-text');
+            if (!btn || !txt) return;
 
             if (isOpen) {
                 btn.innerText = 'إغلاق المتجر';
@@ -360,9 +610,11 @@
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             btn.classList.add('active');
 
+            if (id === 'dashboard') initDashboard();
+            if (id === 'applications') renderApps();
+            if (id === 'chefs') renderChefs();
             if (id === 'coupons') renderCoupons();
             if (id === 'logs') renderLogs();
-            if (id === 'dashboard') initDashboard();
         }
 
         async function renderLogs() {
