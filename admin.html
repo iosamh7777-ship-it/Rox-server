@@ -65,6 +65,15 @@
     <!-- Main Content -->
     <main class="flex-grow p-10 max-h-screen overflow-y-auto">
         
+        <!-- Supabase Warning -->
+        <div id="db-warning" class="hidden mb-10 bg-yellow-500/10 border border-yellow-500/30 p-6 rounded-3xl flex items-center gap-6">
+            <i class="fas fa-exclamation-triangle text-3xl text-yellow-500"></i>
+            <div>
+                <h4 class="font-black text-yellow-500">قاعدة البيانات غير مفعلة!</h4>
+                <p class="text-sm text-gray-400">يرجى وضع مفاتيح Supabase في الكود لتتمكن من حفظ البيانات واستخدام كافة الميزات.</p>
+            </div>
+        </div>
+
         <!-- Dashboard Section -->
         <section id="dashboard" class="admin-section active" data-aos="fade-up">
             <header class="mb-12">
@@ -119,7 +128,7 @@
                         آخر التقديمات <i class="fas fa-chevron-left text-xs text-gray-700"></i>
                     </h3>
                     <div class="space-y-4 overflow-y-auto flex-grow pr-2" id="recent-apps">
-                        <!-- Content via JS -->
+                        <p class="text-center text-gray-600 py-10">لا يوجد تقديمات حالياً</p>
                     </div>
                 </div>
                 <div class="stat-card h-96 overflow-hidden flex flex-col">
@@ -127,7 +136,7 @@
                         آخر المبيعات <i class="fas fa-chevron-left text-xs text-gray-700"></i>
                     </h3>
                     <div class="space-y-4 overflow-y-auto flex-grow pr-2" id="recent-sales">
-                        <!-- Content via JS -->
+                        <p class="text-center text-gray-600 py-10">لا يوجد مبيعات حالياً</p>
                     </div>
                 </div>
             </div>
@@ -148,20 +157,9 @@
                         </tr>
                     </thead>
                     <tbody id="apps-table-body">
-                        <!-- Content via JS -->
+                        <tr><td colspan="5" class="p-20 text-center text-gray-600">لا يوجد طلبات حالياً</td></tr>
                     </tbody>
                 </table>
-            </div>
-        </section>
-
-        <!-- Chefs Section -->
-        <section id="chefs" class="admin-section" data-aos="fade-up">
-            <div class="flex justify-between items-center mb-10">
-                <h1 class="text-4xl font-black">رؤساء الأقسام</h1>
-                <button onclick="document.getElementById('chefModal').classList.add('flex')" class="bg-purple-600 px-8 py-3 rounded-2xl font-black hover:bg-purple-700 transition-all shadow-xl shadow-purple-600/20"><i class="fas fa-plus mr-2"></i> إضافة رئيس جديد</button>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="chefs-grid">
-                <!-- Content via JS -->
             </div>
         </section>
 
@@ -196,8 +194,18 @@
                 <h1 class="text-4xl font-black">أكواد الخصم</h1>
                 <button onclick="document.getElementById('couponModal').classList.add('flex')" class="bg-blue-600 px-8 py-3 rounded-2xl font-black hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20"><i class="fas fa-plus mr-2"></i> إنشاء كود جديد</button>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="coupons-grid">
+                <!-- Content via JS -->
+            </div>
+        </section>
+
+        <!-- Chefs Section -->
+        <section id="chefs" class="admin-section" data-aos="fade-up">
+            <div class="flex justify-between items-center mb-10">
+                <h1 class="text-4xl font-black">رؤساء الأقسام</h1>
+                <button onclick="document.getElementById('chefModal').classList.add('flex')" class="bg-purple-600 px-8 py-3 rounded-2xl font-black hover:bg-purple-700 transition-all shadow-xl shadow-purple-600/20"><i class="fas fa-plus mr-2"></i> إضافة رئيس جديد</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="chefs-grid">
                 <!-- Content via JS -->
             </div>
         </section>
@@ -217,10 +225,9 @@
 
     </main>
 
-    <!-- Modal Coupon -->
     <!-- Modal Chef -->
     <div id="chefModal" class="fixed inset-0 bg-black/90 z-[20000] hidden items-center justify-center p-6 backdrop-filter blur-md">
-        <div class="bg-[#0d0d0d] border border-purple-500/20 p-10 rounded-[40px] w-full max-w-md" data-aos="zoom-in">
+        <div class="bg-[#0d0d0d] border border-purple-500/20 p-10 rounded-[40px] w-full max-w-md">
             <h2 class="text-3xl font-black mb-8 text-center">إضافة رئيس قسم</h2>
             <div class="space-y-6">
                 <div>
@@ -236,7 +243,7 @@
                     </select>
                 </div>
                 <div class="flex gap-4 pt-4">
-                    <button onclick="saveChef()" class="flex-grow bg-purple-600 py-4 rounded-2xl font-black hover:bg-purple-700 shadow-xl shadow-purple-600/20">حفظ البيانات</button>
+                    <button onclick="saveChef()" class="flex-grow bg-purple-600 py-4 rounded-2xl font-black hover:bg-purple-700">حفظ البيانات</button>
                     <button onclick="document.getElementById('chefModal').classList.remove('flex')" class="px-8 bg-white/5 rounded-2xl font-bold">إلغاء</button>
                 </div>
             </div>
@@ -245,7 +252,7 @@
 
     <!-- Modal App View -->
     <div id="appModal" class="fixed inset-0 bg-black/90 z-[20000] hidden items-center justify-center p-6 backdrop-filter blur-md">
-        <div class="bg-[#0d0d0d] border border-blue-500/20 p-10 rounded-[40px] w-full max-w-2xl" data-aos="zoom-in">
+        <div class="bg-[#0d0d0d] border border-blue-500/20 p-10 rounded-[40px] w-full max-w-2xl">
             <div id="app-view-content"></div>
             <div class="flex gap-4 mt-10">
                 <button id="btn-accept-app" class="flex-grow bg-green-600 py-4 rounded-2xl font-black hover:bg-green-700">قبول الطلب</button>
@@ -254,8 +261,10 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Coupon -->
     <div id="couponModal" class="fixed inset-0 bg-black/90 z-[20000] hidden items-center justify-center p-6 backdrop-filter blur-md">
-        <div class="bg-[#0d0d0d] border border-blue-500/20 p-10 rounded-[40px] w-full max-w-md" data-aos="zoom-in">
+        <div class="bg-[#0d0d0d] border border-blue-500/20 p-10 rounded-[40px] w-full max-w-md">
             <h2 class="text-3xl font-black mb-8 text-center">إنشاء كود خصم</h2>
             <div class="space-y-6">
                 <div>
@@ -267,7 +276,7 @@
                     <input type="number" id="coupon-pct" class="form-input" placeholder="25">
                 </div>
                 <div class="flex gap-4 pt-4">
-                    <button onclick="saveCoupon()" class="flex-grow bg-blue-600 py-4 rounded-2xl font-black hover:bg-blue-700 shadow-xl shadow-blue-600/20">حفظ الكود</button>
+                    <button onclick="saveCoupon()" class="flex-grow bg-blue-600 py-4 rounded-2xl font-black hover:bg-blue-700">حفظ الكود</button>
                     <button onclick="document.getElementById('couponModal').classList.remove('flex')" class="px-8 bg-white/5 rounded-2xl font-bold">إلغاء</button>
                 </div>
             </div>
@@ -276,337 +285,144 @@
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // --- DATABASE CONFIGURATION ---
+        /* 
+        --- SUPABASE DATABASE SETUP (RUN THIS IN SUPABASE SQL EDITOR) ---
+        
+        CREATE TABLE settings (
+            key TEXT PRIMARY KEY,
+            value JSONB
+        );
+
+        CREATE TABLE applications (
+            id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+            fullName TEXT,
+            age INTEGER,
+            discordId TEXT,
+            type TEXT,
+            reason TEXT,
+            code TEXT UNIQUE,
+            created_at TIMESTAMPTZ DEFAULT now()
+        );
+
+        CREATE TABLE chefs (
+            id TEXT PRIMARY KEY,
+            dept TEXT,
+            created_at TIMESTAMPTZ DEFAULT now()
+        );
+
+        CREATE TABLE promo_codes (
+            code TEXT PRIMARY KEY,
+            discount INTEGER,
+            created_at TIMESTAMPTZ DEFAULT now()
+        );
+
+        CREATE TABLE sales (
+            id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+            "user" TEXT,
+            item TEXT,
+            price TEXT,
+            created_at TIMESTAMPTZ DEFAULT now()
+        );
+
+        CREATE TABLE logs (
+            id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+            msg TEXT,
+            type TEXT,
+            created_at TIMESTAMPTZ DEFAULT now()
+        );
+
+        -- Initial Settings
+        INSERT INTO settings (key, value) VALUES ('store_open', 'true'::jsonb) ON CONFLICT DO NOTHING;
+        INSERT INTO settings (key, value) VALUES ('recruitment_police', 'true'::jsonb) ON CONFLICT DO NOTHING;
+        INSERT INTO settings (key, value) VALUES ('recruitment_ems', 'true'::jsonb) ON CONFLICT DO NOTHING;
+        */
+
+        // --- CONFIGURATION ---
         const SUPABASE_URL = 'https://your-project.supabase.co';
         const SUPABASE_KEY = 'your-anon-key';
-        
-        let _supabase;
-        try {
-            if (SUPABASE_URL !== 'https://your-project.supabase.co') {
-                _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            }
-        } catch (e) { console.error("Supabase Init Error:", e); }
-
         const ADMIN_IDS = ['609296092835741696', '579499056536092672', '1026172587119755304', '1029823456386228356'];
         
-        // Security Check
-        window.addEventListener('load', () => {
+        let _supabase = null;
+        try {
+            if (SUPABASE_URL && SUPABASE_URL !== 'https://your-project.supabase.co') {
+                _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            } else {
+                console.warn("Supabase keys are not configured.");
+                document.getElementById('db-warning').classList.remove('hidden');
+            }
+        } catch (e) { 
+            console.error("Supabase Init Error:", e);
+            alert("خطأ في الاتصال بقاعدة البيانات: " + e.message);
+        }
+
+        // --- AUTH & LOAD ---
+        window.addEventListener('load', async () => {
             const hidePreloader = () => {
                 const preloader = document.getElementById('preloader');
-                if (preloader && preloader.style.display !== 'none') {
+                if (preloader) {
                     preloader.style.opacity = '0';
                     setTimeout(() => preloader.style.display = 'none', 500);
                 }
             };
+            
+            // Fail-safe for preloader
+            setTimeout(hidePreloader, 3000);
+
+            await checkAccess();
             hidePreloader();
-            setTimeout(hidePreloader, 3000); // Fail-safe for slow assets
-
-            // AOS Visibility Fallback
-            setTimeout(() => {
-                document.querySelectorAll('[data-aos]').forEach(el => {
-                    el.style.opacity = '1';
-                    el.style.transform = 'none';
-                    el.style.visibility = 'visible';
-                });
-            }, 3500);
-
-            // Auth and UI Check
-            const checkAccess = async () => {
-                const user = JSON.parse(localStorage.getItem('discordUser'));
-                let isAuthorized = false;
-                try {
-                    if (user) {
-                        if (ADMIN_IDS.includes(user.id)) isAuthorized = true;
-                        else if (_supabase) {
-                            const { data: chefs } = await _supabase.from('chefs').select('*').eq('id', user.id);
-                            if (chefs && chefs.length > 0) isAuthorized = true;
-                        }
-                    }
-                } catch (e) { console.error("Auth DB Check Error:", e); }
-
-                if (!isAuthorized) {
-                    window.location.href = 'index.html';
-                    return;
-                }
-
-                document.getElementById('adminName').innerText = user.global_name || user.username;
-                initDashboard();
-                updateStoreUI();
-                if (typeof AOS !== 'undefined') {
-                    AOS.init({ duration: 800, once: true });
-                }
-            };
-
-            checkAccess();
         });
 
-        async function initDashboard() {
-            if (!_supabase) return;
-            try {
-                const { data: apps } = await _supabase.from('applications').select('*').order('created_at', { ascending: false });
-                const { data: chefs } = await _supabase.from('chefs').select('*');
-                const { data: promos } = await _supabase.from('promo_codes').select('*');
-                const { data: sales } = await _supabase.from('sales').select('*').order('created_at', { ascending: false });
-                const { data: settings } = await _supabase.from('settings').select('*');
+        async function checkAccess() {
+            const user = JSON.parse(localStorage.getItem('discordUser'));
+            
+            if (!user) {
+                alert("يرجى تسجيل الدخول أولاً من الصفحة الرئيسية");
+                window.location.href = 'index.html';
+                return;
+            }
 
-                document.getElementById('stat-apps').innerText = apps?.length || 0;
-                document.getElementById('stat-chefs').innerText = chefs?.length || 0;
-                document.getElementById('stat-coupons').innerText = promos?.length || 0;
-                document.getElementById('stat-orders').innerText = sales?.length || 0;
+            let isAuthorized = false;
+            
+            // 1. Check if Hardcoded Admin
+            if (ADMIN_IDS.includes(user.id)) {
+                isAuthorized = true;
+            } 
+            // 2. Check if Chef in DB
+            else if (_supabase) {
+                try {
+                    const { data: chefs, error } = await _supabase.from('chefs').select('*').eq('id', user.id);
+                    if (error) throw error;
+                    if (chefs && chefs.length > 0) isAuthorized = true;
+                } catch (e) { 
+                    console.error("Chef Check Error:", e);
+                    // If DB fails but user is hardcoded admin, they already passed
+                }
+            }
 
-                // Recruitment Status from DB
-                const policeOpen = settings?.find(s => s.key === 'recruitment_police')?.value !== false;
-                const emsOpen = settings?.find(s => s.key === 'recruitment_ems')?.value !== false;
-                
-                updateRecruitmentUI('police', policeOpen);
-                updateRecruitmentUI('ems', emsOpen);
+            if (!isAuthorized) {
+                alert("غير مصرح لك بدخول هذه الصفحة. المعرف الخاص بك: " + user.id);
+                window.location.href = 'index.html';
+                return;
+            }
 
-                const appList = document.getElementById('recent-apps');
-                appList.innerHTML = apps?.slice(0, 5).map(app => `
-                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-                        <div class="w-10 h-10 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-500"><i class="fas fa-file-alt"></i></div>
-                        <div class="flex-grow">
-                            <div class="font-bold text-sm">${app.fullName}</div>
-                            <div class="text-[10px] text-gray-500 uppercase">${app.type} - ${new Date(app.created_at).toLocaleDateString()}</div>
-                        </div>
-                        <button onclick="viewApp('${app.code}')" class="text-blue-500 text-xs font-bold hover:underline">عرض</button>
-                    </div>
-                `).join('') || '<p class="text-center text-gray-600 py-10">لا يوجد تقديمات حالياً</p>';
+            document.getElementById('adminName').innerText = user.global_name || user.username;
+            
+            // Initialize AOS
+            if (typeof AOS !== 'undefined') AOS.init({ duration: 800, once: true });
 
-                const salesList = document.getElementById('recent-sales');
-                salesList.innerHTML = sales?.slice(0, 5).map(sale => `
-                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
-                        <div class="w-10 h-10 bg-green-500/10 rounded-full flex items-center justify-center text-green-500"><i class="fas fa-check"></i></div>
-                        <div>
-                            <div class="font-bold text-sm">${sale.item}</div>
-                            <div class="text-[10px] text-gray-500 uppercase">${sale.user} - ${sale.price}</div>
-                        </div>
-                    </div>
-                `).join('') || '<p class="text-center text-gray-600 py-10">لا يوجد مبيعات حالياً</p>';
-            } catch (e) { console.error("DB Load Error:", e); }
-        }
-
-        // Recruitment Logic
-        async function toggleRecruitment(type) {
-            if (!_supabase) return;
-            const { data } = await _supabase.from('settings').select('value').eq('key', `recruitment_${type}`).single();
-            const newStatus = !data?.value;
-            await _supabase.from('settings').upsert({ key: `recruitment_${type}`, value: newStatus });
-            addLog(`قام المدير بـ ${newStatus ? 'فتح' : 'إغلاق'} تقديم ${type === 'police' ? 'الشرطة' : 'الإسعاف'}`, 'system');
-            updateRecruitmentUI(type, newStatus);
-        }
-
-        function updateRecruitmentUI(type, isOpen) {
-            const label = document.getElementById(`${type}-status-label`);
-            const btn = document.getElementById(`toggle${type.charAt(0).toUpperCase() + type.slice(1)}Btn`);
-            if (!label || !btn) return;
-
-            if (isOpen) {
-                label.innerText = 'مفتوح حالياً';
-                label.className = 'text-green-500 font-bold';
-                btn.innerText = 'إغلاق التقديم';
-                btn.className = 'bg-red-600/20 text-red-500 px-6 py-2 rounded-xl font-bold border border-red-500/30 hover:bg-red-600 hover:text-white transition-all text-sm';
+            // Load Initial Data
+            if (_supabase) {
+                await initDashboard();
+                await updateStoreUI();
             } else {
-                label.innerText = 'مغلق حالياً';
-                label.className = 'text-red-500 font-bold';
-                btn.innerText = 'فتح التقديم';
-                btn.className = 'bg-green-600/20 text-green-500 px-6 py-2 rounded-xl font-bold border border-green-500/30 hover:bg-green-600 hover:text-white transition-all text-sm';
+                console.warn("Dashboard not loaded: Supabase not configured.");
             }
         }
 
-        // Applications Logic
-        async function renderApps() {
-            if (!_supabase) return;
-            const { data: apps } = await _supabase.from('applications').select('*').order('created_at', { ascending: false });
-            const tbody = document.getElementById('apps-table-body');
-            tbody.innerHTML = apps?.map(app => `
-                <tr class="border-b border-white/5 hover:bg-white/[0.02] transition-all">
-                    <td class="p-6 font-bold text-sm">${app.fullName}</td>
-                    <td class="p-6 text-gray-400 text-sm">${app.age}</td>
-                    <td class="p-6 uppercase text-xs font-black text-blue-500">${app.type}</td>
-                    <td class="p-6 font-mono text-xs text-gray-500">${app.code}</td>
-                    <td class="p-6">
-                        <button onclick="viewApp('${app.code}')" class="bg-blue-600/10 text-blue-500 px-4 py-2 rounded-lg text-xs font-bold hover:bg-blue-600 hover:text-white transition-all">مراجعة</button>
-                    </td>
-                </tr>
-            `).join('') || '<tr><td colspan="5" class="p-20 text-center text-gray-600">لا يوجد طلبات حالياً</td></tr>';
-        }
-
-        async function viewApp(code) {
-            if (!_supabase) return;
-            const { data: app } = await _supabase.from('applications').select('*').eq('code', code).single();
-            if (!app) return;
-
-            const modal = document.getElementById('appModal');
-            const content = document.getElementById('app-view-content');
-            content.innerHTML = `
-                <div class="flex justify-between items-start mb-10">
-                    <div>
-                        <h2 class="text-3xl font-black mb-2">${app.fullName}</h2>
-                        <span class="bg-blue-500/10 text-blue-500 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">${app.type}</span>
-                    </div>
-                    <div class="text-left">
-                        <div class="text-xs text-gray-500 font-bold uppercase mb-1">كود الطلب</div>
-                        <div class="text-xl font-mono text-white font-black">${app.code}</div>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-8 mb-10">
-                    <div class="bg-white/5 p-6 rounded-3xl border border-white/5">
-                        <div class="text-xs text-gray-500 font-bold mb-2 uppercase">العمر</div>
-                        <div class="text-xl font-bold">${app.age} سنة</div>
-                    </div>
-                    <div class="bg-white/5 p-6 rounded-3xl border border-white/5">
-                        <div class="text-xs text-gray-500 font-bold mb-2 uppercase">Discord ID</div>
-                        <div class="text-xl font-mono font-bold">${app.discordId}</div>
-                    </div>
-                </div>
-                <div class="bg-white/5 p-8 rounded-3xl border border-white/5">
-                    <div class="text-xs text-gray-500 font-bold mb-4 uppercase italic">سبب الانضمام والخبرات</div>
-                    <p class="text-gray-300 leading-relaxed whitespace-pre-wrap">${app.reason}</p>
-                </div>
-            `;
-
-            document.getElementById('btn-accept-app').onclick = () => handleApp(app, 'accept');
-            document.getElementById('btn-deny-app').onclick = () => handleApp(app, 'deny');
-            
-            modal.classList.add('flex');
-        }
-
-        async function handleApp(app, action) {
-            if (!confirm(`هل أنت متأكد من ${action === 'accept' ? 'قبول' : 'رفض'} هذا الطلب؟`)) return;
-            
-            addLog(`قام المدير بـ ${action === 'accept' ? 'قبول' : 'رفض'} طلب: ${app.fullName} (${app.code})`, 'system');
-            // In a real scenario, you would delete from DB or mark as processed
-            await _supabase.from('applications').delete().eq('code', app.code);
-            
-            alert(`تم ${action === 'accept' ? 'القبول' : 'الرفض'} بنجاح.`);
-            document.getElementById('appModal').classList.remove('flex');
-            renderApps();
-            initDashboard();
-        }
-
-        // Chefs Logic
-        async function saveChef() {
-            if (!_supabase) return;
-            const id = document.getElementById('chef-id').value.trim();
-            const dept = document.getElementById('chef-dept').value;
-
-            if (!id) return alert('يرجى إدخال Discord ID');
-
-            await _supabase.from('chefs').insert({ id, dept });
-            addLog(`تم تعيين رئيس قسم جديد: ${id} (${dept})`, 'system');
-            document.getElementById('chefModal').classList.remove('flex');
-            renderChefs();
-        }
-
-        async function renderChefs() {
-            if (!_supabase) return;
-            const { data: chefs } = await _supabase.from('chefs').select('*');
-            const grid = document.getElementById('chefs-grid');
-            grid.innerHTML = chefs?.map(c => `
-                <div class="stat-card">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-500 text-xl"><i class="fas fa-user-tie"></i></div>
-                        <button onclick="deleteChef('${c.id}')" class="text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <h4 class="text-sm font-mono text-gray-400 mb-2">${c.id}</h4>
-                    <div class="flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full ${c.dept === 'all' ? 'bg-yellow-500' : (c.dept === 'police' ? 'bg-blue-500' : 'bg-green-500')}"></span>
-                        <p class="font-black uppercase text-xs tracking-widest">${c.dept === 'all' ? 'إدارة عامة' : (c.dept === 'police' ? 'رئيس شرطة' : 'رئيس إسعاف')}</p>
-                    </div>
-                </div>
-            `).join('') || '';
-        }
-
-        async function deleteChef(id) {
-            if (!_supabase) return;
-            await _supabase.from('chefs').delete().eq('id', id);
-            addLog(`تم سحب صلاحيات رئيس القسم: ${id}`, 'system');
-            renderChefs();
-        }
-
-        // Store Logic
-        async function toggleStoreStatus() {
-            if (!_supabase) return;
-            const { data } = await _supabase.from('settings').select('value').eq('key', 'store_open').single();
-            const newStatus = !data?.value;
-            await _supabase.from('settings').upsert({ key: 'store_open', value: newStatus });
-            
-            addLog(`قام المدير بـ ${newStatus ? 'فتح' : 'إغلاق'} المتجر`, 'store');
-            updateStoreUI();
-        }
-
-        async function updateStoreUI() {
-            if (!_supabase) return;
-            const { data } = await _supabase.from('settings').select('value').eq('key', 'store_open').single();
-            const isOpen = data?.value !== false;
-            
-            const btn = document.getElementById('toggleStoreBtn');
-            const txt = document.getElementById('store-status-text');
-            if (!btn || !txt) return;
-
-            if (isOpen) {
-                btn.innerText = 'إغلاق المتجر';
-                btn.className = 'bg-red-600 px-8 py-3 rounded-2xl font-black hover:bg-red-700 transition-all';
-                txt.innerText = 'المتجر مفتوح الآن ويستقبل الطلبات';
-                txt.className = 'text-green-500 font-bold';
-            } else {
-                btn.innerText = 'فتح المتجر';
-                btn.className = 'bg-green-600 px-8 py-3 rounded-2xl font-black hover:bg-green-700 transition-all';
-                txt.innerText = 'المتجر مغلق حالياً أمام المستخدمين';
-                txt.className = 'text-red-500 font-bold';
-            }
-        }
-
-        // Coupon Logic
-        async function saveCoupon() {
-            if (!_supabase) return;
-            const name = document.getElementById('coupon-name').value.toUpperCase().trim();
-            const pct = parseInt(document.getElementById('coupon-pct').value);
-
-            if (!name || isNaN(pct)) return alert('بيانات غير مكتملة');
-
-            await _supabase.from('promo_codes').insert({ code: name, discount: pct });
-            
-            addLog(`تم إنشاء كود خصم جديد: ${name} (${pct}%)`, 'coupons');
-            document.getElementById('couponModal').classList.remove('flex');
-            renderCoupons();
-        }
-
-        async function renderCoupons() {
-            if (!_supabase) return;
-            const { data: promos } = await _supabase.from('promo_codes').select('*');
-            const grid = document.getElementById('coupons-grid');
-            grid.innerHTML = promos?.map((p) => `
-                <div class="stat-card">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="w-12 h-12 bg-yellow-500/10 rounded-2xl flex items-center justify-center text-yellow-500 text-xl"><i class="fas fa-ticket-alt"></i></div>
-                        <button onclick="deleteCoupon('${p.code}')" class="text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <h4 class="text-2xl font-black mb-1">${p.code}</h4>
-                    <p class="text-blue-500 font-bold">${p.discount}% خصم</p>
-                </div>
-            `).join('') || '';
-        }
-
-        async function deleteCoupon(code) {
-            if (!_supabase) return;
-            await _supabase.from('promo_codes').delete().eq('code', code);
-            addLog(`تم حذف كود الخصم: ${code}`, 'coupons');
-            renderCoupons();
-        }
-
-        // Logs Logic
-        async function addLog(msg, type) {
-            if (!_supabase) return;
-            await _supabase.from('logs').insert({ msg, type });
-            if (document.getElementById('logs').classList.contains('active')) renderLogs();
-        }
-
+        // --- UI NAVIGATION ---
         function showSection(id, btn) {
             document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             btn.classList.add('active');
 
@@ -617,39 +433,316 @@
             if (id === 'logs') renderLogs();
         }
 
+        // --- DASHBOARD ---
+        async function initDashboard() {
+            if (!_supabase) return;
+            try {
+                // Fetch stats with individual error handling
+                const fetchStat = async (table) => {
+                    try {
+                        const { count, error } = await _supabase.from(table).select('*', { count: 'exact', head: true });
+                        if (error) throw error;
+                        return count || 0;
+                    } catch (e) {
+                        console.error(`Error fetching count for ${table}:`, e);
+                        return 0;
+                    }
+                };
+
+                const appsCount = await fetchStat('applications');
+                const chefsCount = await fetchStat('chefs');
+                const couponsCount = await fetchStat('promo_codes');
+                const salesCount = await fetchStat('sales');
+
+                document.getElementById('stat-apps').innerText = appsCount;
+                document.getElementById('stat-chefs').innerText = chefsCount;
+                document.getElementById('stat-coupons').innerText = couponsCount;
+                document.getElementById('stat-orders').innerText = salesCount;
+
+                // Load Settings
+                const { data: settings } = await _supabase.from('settings').select('*');
+                const policeOpen = settings?.find(s => s.key === 'recruitment_police')?.value !== false;
+                const emsOpen = settings?.find(s => s.key === 'recruitment_ems')?.value !== false;
+                updateRecruitmentUI('police', policeOpen);
+                updateRecruitmentUI('ems', emsOpen);
+
+                // Recent Items
+                const { data: apps } = await _supabase.from('applications').select('*').order('created_at', { ascending: false }).limit(5);
+                const appList = document.getElementById('recent-apps');
+                appList.innerHTML = apps && apps.length > 0 ? apps.map(app => `
+                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <div class="w-10 h-10 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-500"><i class="fas fa-file-alt"></i></div>
+                        <div class="flex-grow">
+                            <div class="font-bold text-sm">${app.fullName || 'بدون اسم'}</div>
+                            <div class="text-[10px] text-gray-500 uppercase">${app.type} - ${new Date(app.created_at).toLocaleDateString()}</div>
+                        </div>
+                        <button onclick="viewApp('${app.code}')" class="text-blue-500 text-xs font-bold hover:underline">عرض</button>
+                    </div>
+                `).join('') : '<p class="text-center text-gray-600 py-10">لا يوجد تقديمات حالياً</p>';
+
+                const { data: sales } = await _supabase.from('sales').select('*').order('created_at', { ascending: false }).limit(5);
+                const salesList = document.getElementById('recent-sales');
+                salesList.innerHTML = sales && sales.length > 0 ? sales.map(sale => `
+                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <div class="w-10 h-10 bg-green-500/10 rounded-full flex items-center justify-center text-green-500"><i class="fas fa-check"></i></div>
+                        <div>
+                            <div class="font-bold text-sm">${sale.item}</div>
+                            <div class="text-[10px] text-gray-500 uppercase">${sale.user} - ${sale.price}</div>
+                        </div>
+                    </div>
+                `).join('') : '<p class="text-center text-gray-600 py-10">لا يوجد مبيعات حالياً</p>';
+
+            } catch (e) { 
+                console.error("Dashboard Load Error:", e);
+                alert("حدث خطأ أثناء تحميل الإحصائيات. تأكد من وجود الجداول في قاعدة البيانات.");
+            }
+        }
+
+        // --- RECRUITMENT ---
+        async function toggleRecruitment(type) {
+            if (!_supabase) return;
+            try {
+                const { data } = await _supabase.from('settings').select('value').eq('key', `recruitment_${type}`).single();
+                const newStatus = !data?.value;
+                await _supabase.from('settings').upsert({ key: `recruitment_${type}`, value: newStatus });
+                await addLog(`قام المدير بـ ${newStatus ? 'فتح' : 'إغلاق'} تقديم ${type === 'police' ? 'الشرطة' : 'الإسعاف'}`, 'system');
+                updateRecruitmentUI(type, newStatus);
+            } catch(e) { 
+                console.error(e);
+                alert("فشل تغيير حالة التقديم: " + e.message);
+            }
+        }
+
+        function updateRecruitmentUI(type, isOpen) {
+            const label = document.getElementById(`${type}-status-label`);
+            const btn = document.getElementById(`toggle${type.charAt(0).toUpperCase() + type.slice(1)}Btn`);
+            if (!label || !btn) return;
+            label.innerText = isOpen ? 'مفتوح حالياً' : 'مغلق حالياً';
+            label.className = isOpen ? 'text-green-500 font-bold' : 'text-red-500 font-bold';
+            btn.innerText = isOpen ? 'إغلاق التقديم' : 'فتح التقديم';
+        }
+
+        // --- APPLICATIONS ---
+        async function renderApps() {
+            if (!_supabase) return;
+            try {
+                const { data: apps, error } = await _supabase.from('applications').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+                const tbody = document.getElementById('apps-table-body');
+                tbody.innerHTML = apps && apps.length > 0 ? apps.map(app => `
+                    <tr class="border-b border-white/5 hover:bg-white/[0.02] transition-all">
+                        <td class="p-6 font-bold text-sm">${app.fullName || 'بدون اسم'}</td>
+                        <td class="p-6 text-gray-400 text-sm">${app.age}</td>
+                        <td class="p-6 uppercase text-xs font-black text-blue-500">${app.type}</td>
+                        <td class="p-6 font-mono text-xs text-gray-500">${app.code}</td>
+                        <td class="p-6"><button onclick="viewApp('${app.code}')" class="bg-blue-600/10 text-blue-500 px-4 py-2 rounded-lg text-xs font-bold">مراجعة</button></td>
+                    </tr>
+                `).join('') : '<tr><td colspan="5" class="p-20 text-center text-gray-600">لا يوجد طلبات حالياً</td></tr>';
+            } catch (e) {
+                console.error("Render Apps Error:", e);
+            }
+        }
+
+        async function viewApp(code) {
+            if (!_supabase) return;
+            try {
+                const { data: app, error } = await _supabase.from('applications').select('*').eq('code', code).single();
+                if (error) throw error;
+                if (!app) return;
+                document.getElementById('app-view-content').innerHTML = `
+                    <div class="mb-10">
+                        <h2 class="text-3xl font-black mb-2">${app.fullName || 'بدون اسم'}</h2>
+                        <p class="text-blue-500 font-black">${app.type.toUpperCase()}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-6 mb-10 text-right">
+                        <div class="bg-white/5 p-4 rounded-2xl"><span>العمر:</span> <b>${app.age}</b></div>
+                        <div class="bg-white/5 p-4 rounded-2xl"><span>ID:</span> <b>${app.discordId}</b></div>
+                    </div>
+                    <div class="bg-white/5 p-6 rounded-2xl text-right">
+                        <p class="text-gray-400 mb-2 text-xs">السبب والخبرات:</p>
+                        <p class="text-sm leading-loose">${app.reason || 'لا يوجد وصف'}</p>
+                    </div>
+                `;
+                document.getElementById('btn-accept-app').onclick = () => handleApp(app, 'accept');
+                document.getElementById('btn-deny-app').onclick = () => handleApp(app, 'deny');
+                document.getElementById('appModal').classList.add('flex');
+            } catch (e) {
+                console.error("View App Error:", e);
+                alert("فشل تحميل بيانات الطلب.");
+            }
+        }
+
+        async function handleApp(app, action) {
+            if (!confirm(`هل أنت متأكد من ${action === 'accept' ? 'قبول' : 'رفض'} هذا الطلب؟`)) return;
+            try {
+                const { error } = await _supabase.from('applications').delete().eq('code', app.code);
+                if (error) throw error;
+                await addLog(`تم ${action === 'accept' ? 'قبول' : 'رفض'} طلب: ${app.fullName}`, 'system');
+                document.getElementById('appModal').classList.remove('flex');
+                await renderApps();
+                await initDashboard();
+            } catch (e) {
+                console.error("Handle App Error:", e);
+                alert("فشل تنفيذ العملية.");
+            }
+        }
+
+        // --- STORE & COUPONS ---
+        async function toggleStoreStatus() {
+            if (!_supabase) return;
+            try {
+                const { data } = await _supabase.from('settings').select('value').eq('key', 'store_open').single();
+                const newStatus = !data?.value;
+                await _supabase.from('settings').upsert({ key: 'store_open', value: newStatus });
+                await updateStoreUI();
+                await addLog(`تم ${newStatus ? 'فتح' : 'إغلاق'} المتجر`, 'store');
+            } catch (e) {
+                console.error(e);
+                alert("فشل تغيير حالة المتجر.");
+            }
+        }
+
+        async function updateStoreUI() {
+            if (!_supabase) return;
+            try {
+                const { data } = await _supabase.from('settings').select('value').eq('key', 'store_open').single();
+                const isOpen = data?.value !== false;
+                document.getElementById('store-status-text').innerText = isOpen ? 'المتجر مفتوح الآن' : 'المتجر مغلق حالياً';
+                document.getElementById('store-status-text').className = isOpen ? 'text-green-500 font-bold' : 'text-red-500 font-bold';
+                document.getElementById('toggleStoreBtn').innerText = isOpen ? 'إغلاق المتجر' : 'فتح المتجر';
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function saveCoupon() {
+            if (!_supabase) return;
+            try {
+                const code = document.getElementById('coupon-name').value.toUpperCase();
+                const discount = parseInt(document.getElementById('coupon-pct').value);
+                if (!code || isNaN(discount)) {
+                    alert("يرجى إدخال كود ونسبة خصم صحيحة.");
+                    return;
+                }
+                const { error } = await _supabase.from('promo_codes').insert({ code, discount });
+                if (error) throw error;
+                document.getElementById('couponModal').classList.remove('flex');
+                await renderCoupons();
+                await addLog(`تم إنشاء كود خصم جديد: ${code}`, 'coupons');
+            } catch (e) {
+                console.error(e);
+                alert("فشل حفظ الكود: " + e.message);
+            }
+        }
+
+        async function renderCoupons() {
+            if (!_supabase) return;
+            try {
+                const { data, error } = await _supabase.from('promo_codes').select('*');
+                if (error) throw error;
+                document.getElementById('coupons-grid').innerHTML = data && data.length > 0 ? data.map(p => `
+                    <div class="stat-card">
+                        <div class="flex justify-between items-start mb-4">
+                            <i class="fas fa-ticket-alt text-yellow-500 text-2xl"></i>
+                            <button onclick="deleteCoupon('${p.code}')" class="text-red-500"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <h4 class="text-2xl font-black">${p.code}</h4>
+                        <p class="text-blue-500">${p.discount}% خصم</p>
+                    </div>
+                `).join('') : '<p class="text-center text-gray-600 py-10 w-full col-span-3">لا يوجد أكواد خصم حالياً</p>';
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function deleteCoupon(code) {
+            if (!confirm("حذف الكود؟")) return;
+            try {
+                await _supabase.from('promo_codes').delete().eq('code', code);
+                await renderCoupons();
+                await addLog(`تم حذف كود الخصم: ${code}`, 'coupons');
+            } catch (e) { console.error(e); }
+        }
+
+        // --- CHEFS ---
+        async function saveChef() {
+            if (!_supabase) return;
+            try {
+                const id = document.getElementById('chef-id').value;
+                const dept = document.getElementById('chef-dept').value;
+                if (!id) {
+                    alert("يرجى إدخال معرف الديسكورد.");
+                    return;
+                }
+                const { error } = await _supabase.from('chefs').insert({ id, dept });
+                if (error) throw error;
+                document.getElementById('chefModal').classList.remove('flex');
+                await renderChefs();
+                await addLog(`تمت إضافة رئيس قسم جديد: ${id}`, 'system');
+            } catch (e) {
+                console.error(e);
+                alert("فشل إضافة رئيس القسم: " + e.message);
+            }
+        }
+
+        async function renderChefs() {
+            if (!_supabase) return;
+            try {
+                const { data, error } = await _supabase.from('chefs').select('*');
+                if (error) throw error;
+                document.getElementById('chefs-grid').innerHTML = data && data.length > 0 ? data.map(c => `
+                    <div class="stat-card">
+                        <div class="flex justify-between mb-4">
+                            <i class="fas fa-user-tie text-purple-500 text-2xl"></i>
+                            <button onclick="deleteChef('${c.id}')" class="text-red-500"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <p class="text-xs font-mono mb-2">${c.id}</p>
+                        <p class="font-black text-xs uppercase text-purple-500">${c.dept}</p>
+                    </div>
+                `).join('') : '<p class="text-center text-gray-600 py-10 w-full col-span-3">لا يوجد رؤساء أقسام حالياً</p>';
+            } catch (e) { console.error(e); }
+        }
+
+        async function deleteChef(id) {
+            if (!confirm("حذف العضو؟")) return;
+            try {
+                await _supabase.from('chefs').delete().eq('id', id);
+                await renderChefs();
+                await addLog(`تم حذف رئيس قسم: ${id}`, 'system');
+            } catch (e) { console.error(e); }
+        }
+
+        // --- LOGS ---
+        async function addLog(msg, type) {
+            if (!_supabase) return;
+            try {
+                await _supabase.from('logs').insert({ msg, type });
+            } catch (e) { console.error("Log Error:", e); }
+        }
+
         async function renderLogs() {
             if (!_supabase) return;
-            const { data: logs } = await _supabase.from('logs').select('*').order('created_at', { ascending: false }).limit(100);
-            const list = document.getElementById('logs-list');
-            list.innerHTML = logs?.map(l => `
-                <div class="log-item">
-                    <div class="log-time">${new Date(l.created_at).toLocaleString('ar-EG')}</div>
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs ${getLogClass(l.type)}">
-                        <i class="${getLogIcon(l.type)}"></i>
+            try {
+                const { data, error } = await _supabase.from('logs').select('*').order('created_at', { ascending: false }).limit(50);
+                if (error) throw error;
+                document.getElementById('logs-list').innerHTML = data && data.length > 0 ? data.map(l => `
+                    <div class="log-item">
+                        <span class="log-time text-[10px]">${new Date(l.created_at).toLocaleString()}</span>
+                        <span class="font-bold">${l.msg}</span>
                     </div>
-                    <div class="font-bold">${l.msg}</div>
-                </div>
-            `).join('') || '<div class="p-20 text-center text-gray-700">لا توجد سجلات حالياً</div>';
+                `).join('') : '<p class="text-center text-gray-600 py-10">لا يوجد سجلات حالياً</p>';
+            } catch (e) { console.error(e); }
         }
 
-        function getLogIcon(type) {
-            if (type === 'store') return 'fas fa-store';
-            if (type === 'coupons') return 'fas fa-ticket-alt';
-            if (type === 'system') return 'fas fa-cog';
-            return 'fas fa-info-circle';
-        }
-
-        function getLogClass(type) {
-            if (type === 'store') return 'bg-green-500/10 text-green-500';
-            if (type === 'coupons') return 'bg-yellow-500/10 text-yellow-500';
-            if (type === 'system') return 'bg-blue-500/10 text-blue-500';
-            return 'bg-gray-500/10 text-gray-500';
-        }
-
-        function clearLogs() {
-            if (confirm('هل أنت متأكد من مسح جميع السجلات؟')) {
-                localStorage.removeItem('adminLogs');
-                renderLogs();
+        async function clearLogs() {
+            if (confirm("هل أنت متأكد من مسح كافة السجلات؟")) {
+                if (_supabase) {
+                    try {
+                        const { error } = await _supabase.from('logs').delete().neq('msg', '');
+                        if (error) throw error;
+                        await renderLogs();
+                    } catch (e) { console.error(e); }
+                }
             }
         }
     </script>
