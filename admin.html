@@ -76,9 +76,14 @@
 
         <!-- Dashboard Section -->
         <section id="dashboard" class="admin-section active" data-aos="fade-up">
-            <header class="mb-12">
-                <h1 class="text-4xl font-black mb-2">مرحباً، <span id="adminName">...</span></h1>
-                <p class="text-gray-500">نظرة عامة على أداء الموقع والعمليات الأخيرة.</p>
+            <header class="mb-12 flex justify-between items-center">
+                <div>
+                    <h1 class="text-4xl font-black mb-2">مرحباً، <span id="adminName">...</span></h1>
+                    <p class="text-gray-500">نظرة عامة على أداء الموقع والعمليات الأخيرة.</p>
+                </div>
+                <button onclick="initDashboard()" class="bg-blue-600/10 text-blue-500 px-6 py-3 rounded-2xl font-bold hover:bg-blue-600/20 transition-all">
+                    <i class="fas fa-sync-alt mr-2"></i> تحديث البيانات
+                </button>
             </header>
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
@@ -441,11 +446,17 @@
                 const fetchStat = async (table) => {
                     try {
                         const { count, error } = await _supabase.from(table).select('*', { count: 'exact', head: true });
-                        if (error) throw error;
+                        if (error) {
+                            if (error.code === 'PGRST116' || error.message.includes('not found')) {
+                                console.warn(`Table ${table} might not exist yet.`);
+                                return 'Error';
+                            }
+                            throw error;
+                        }
                         return count || 0;
                     } catch (e) {
                         console.error(`Error fetching count for ${table}:`, e);
-                        return 0;
+                        return '!!';
                     }
                 };
 
@@ -592,13 +603,18 @@
             if (!_supabase) return;
             try {
                 const { data } = await _supabase.from('settings').select('value').eq('key', 'store_open').single();
-                const newStatus = !data?.value;
-                await _supabase.from('settings').upsert({ key: 'store_open', value: newStatus });
+                // If data is null (row missing), we assume it's currently open (true), so new status is false.
+                const currentStatus = (data && data.value !== undefined) ? data.value : true;
+                const newStatus = !currentStatus;
+                
+                const { error } = await _supabase.from('settings').upsert({ key: 'store_open', value: newStatus });
+                if (error) throw error;
+
                 await updateStoreUI();
                 await addLog(`تم ${newStatus ? 'فتح' : 'إغلاق'} المتجر`, 'store');
             } catch (e) {
                 console.error(e);
-                alert("فشل تغيير حالة المتجر.");
+                alert("فشل تغيير حالة المتجر: " + e.message);
             }
         }
 
