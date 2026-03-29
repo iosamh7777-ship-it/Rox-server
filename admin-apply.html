@@ -511,8 +511,13 @@
             };
 
             try {
+                // Determine API URL (Local or Remote)
+                const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                    ? 'http://localhost:3000/api/apply' 
+                    : '/api/apply';
+
                 // Save to database
-                const dbResponse = await fetch('http://localhost:3000/api/apply', {
+                const dbResponse = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
